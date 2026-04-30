@@ -34,6 +34,20 @@ Preserve the original conversation as much as possible:
 
 The extension must preserve original content and ordering. It must not rewrite, summarize, or intentionally omit content.
 
+## Architectural Product Constraints
+
+The product must be implemented as a local Chrome MV3 extension with these constraints:
+
+- Use the user's existing authenticated Chrome session.
+- Read the rendered ChatGPT page through a content script.
+- Keep DOM extraction separate from archive/download orchestration.
+- Keep final download controlled by extension runtime code, not page code.
+- Keep export transformation logic testable outside Chrome APIs.
+- Do not use Playwright, a backend server, or the OpenAI API for MVP.
+- Do not request broad host access only to improve asset download success.
+
+These constraints are part of the product, not optional implementation preferences.
+
 ## MVP Scope
 
 In scope:
@@ -45,10 +59,11 @@ In scope:
 - preserve code blocks
 - preserve bullet and numbered lists
 - preserve tables where possible
-- extract visible images
+- detect visible images and asset candidates
 - save Markdown file
-- save local assets
+- save local assets where browser policy allows
 - package result as ZIP
+- show warnings for partial export issues
 
 Out of scope for MVP:
 
@@ -63,6 +78,8 @@ Out of scope for MVP:
 - Playwright crawler
 - server backend
 - OpenAI API integration
+- persistent background export queue
+- arbitrary remote asset proxying
 
 ## Target Platform
 
@@ -88,11 +105,14 @@ Possible future targets:
 2. User clicks the extension icon.
 3. Popup opens.
 4. User clicks `Export Current Chat`.
-5. Extension scans the current page.
-6. Extension creates Markdown.
-7. Extension downloads assets where possible.
-8. Extension creates ZIP.
-9. Extension downloads `chatgpt-export-<slug>.zip`.
+5. Extension validates the active tab.
+6. Content script scans the current page.
+7. Extension creates Markdown from structured extraction data.
+8. Extension downloads or converts assets where policy allows.
+9. Extension validates output.
+10. Extension creates ZIP.
+11. Extension downloads `chatgpt-export-<slug>.zip`.
+12. Popup shows success, warnings, or failure.
 
 ## Output
 
@@ -118,9 +138,12 @@ ZIP content:
 Minimum popup states:
 
 - Ready
+- Checking page
 - Extracting
-- Downloading assets
+- Building Markdown
+- Resolving assets
 - Creating ZIP
+- Downloading
 - Done
 - Failed
 
@@ -129,6 +152,7 @@ Warnings should be explicit, for example:
 - `Not a supported ChatGPT conversation page.`
 - `Could not detect messages.`
 - `Export completed with 2 asset warnings.`
+- `Some images could not be saved locally and remain remote links.`
 
 ## Acceptance Criteria
 
@@ -140,6 +164,8 @@ The MVP is acceptable when:
 - user and assistant roles are represented
 - code blocks remain fenced code blocks
 - images are local when browser policy allows
-- asset fallback warnings are reported
+- remote image fallback warnings are reported
+- ZIP asset paths match Markdown references
 - no external server receives conversation content
+- implementation follows the runtime boundaries in [architecture.md](architecture.md)
 

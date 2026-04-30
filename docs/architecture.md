@@ -2,152 +2,296 @@
 
 Updated: 2026-04-30
 
-## Architecture Direction
+This document is the project architecture source of truth. The proposal contains useful recommendations, but this file records the evaluated architecture that implementation should follow.
 
-The project is a Chrome Manifest V3 extension. It runs inside the user's real browser context instead of launching an automated browser.
+## Architecture Summary
 
-This avoids:
+Build a Chrome Manifest V3 extension with a runtime-first design:
 
-- login automation
-- cookie transfer
-- 2FA handling
-- Playwright automation fingerprint issues
+- Popup owns UI state and user interaction only.
+- Content script owns ChatGPT DOM inspection only.
+- Service worker owns extension orchestration, tab validation, Chrome API calls, and download handoff.
+- Pure project modules own Markdown writing, archive modeling, validation, slugging, and asset naming.
+- Offscreen document is optional and introduced only if ZIP/blob/download work needs a document context or needs to outlive the popup.
 
-## Recommended Project Structure
+The architecture avoids Playwright, login automation, backend services, cloud sync, telemetry, and broad host permissions.
+
+## Evaluation of Proposal Structure
+
+The proposal's structure is directionally useful, but it mixes runtime contexts and implementation modules. The adjusted architecture keeps the same product shape while making Chrome MV3 boundaries explicit.
+
+Accepted from proposal:
+
+- Chrome Manifest V3 extension
+- popup trigger
+- content script on ChatGPT pages
+- service worker
+- TypeScript
+- Vite
+- JSZip
+- modular DOM extraction
+- local ZIP archive output
+
+Changed from proposal:
+
+- `export/` is not a runtime owner. It contains pure logic and wrappers that can be called by popup, service worker, or offscreen code.
+- asset download is separated from DOM extraction because content scripts are subject to page-origin request constraints.
+- Chrome APIs are accessed through a thin adapter to keep most code testable.
+- offscreen document is documented as a conditional component, not part of the initial skeleton.
+- validation and warning models are first-class architecture concerns.
+
+Rejected for MVP:
+
+- persistent background state
+- broad `<all_urls>` host permission
+- content script performing final download
+- popup containing export business logic
+- page-context script injection unless a future issue proves isolated-world DOM access is insufficient
+
+## Runtime Contexts
+
+### Popup
+
+Role:
+
+- render the extension popup UI
+- show status and warnings
+- trigger export
+- display final success/failure state
+
+Rules:
+
+- Do not parse ChatGPT DOM.
+- Do not own long-running export state.
+- Do not directly depend on ChatGPT selectors.
+- Keep business logic thin enough that closing the popup does not corrupt source data.
+
+### Content Script
+
+Role:
+
+- run on supported ChatGPT pages
+- read rendered DOM
+- detect title, messages, roles, blocks, and visible asset references
+- return a structured extraction result
+
+Rules:
+
+- Do not call `chrome.downloads`.
+- Do not build the final ZIP.
+- Do not fetch arbitrary remote assets.
+- Do not depend on one selector.
+- Preserve unknown visible content instead of silently dropping it.
+
+Content scripts run in an isolated world. They can read the page DOM, but they do not share JavaScript variables with the ChatGPT page. If future extraction requires page runtime objects, add an explicit page-bridge design and decision record before implementing it.
+
+### Service Worker
+
+Role:
+
+- register top-level extension event listeners
+- validate active tab and supported URL
+- coordinate popup, content script, and optional offscreen document
+- call privileged Chrome APIs such as downloads
+- ensure final download is initiated with an explicit archive artifact
+
+Rules:
+
+- Do not rely on global variables for durable state.
+- Do not use DOM or `window`.
+- Do not register event listeners asynchronously.
+- Keep long-running workflows resilient to MV3 service worker termination.
+- Persist only non-sensitive operational state if absolutely needed.
+
+### Offscreen Document
+
+Role:
+
+- provide a document context for operations service workers cannot perform
+- handle ZIP/blob/object URL flows if service worker or popup context proves insufficient
+
+Rules:
+
+- Not required for Milestone 1.
+- Not the place for primary business logic.
+- Communicates through runtime messages.
+- Added only with the `offscreen` permission and a recorded decision update.
+
+Use it when there is concrete evidence that a document context is required for archive generation or download handoff.
+
+## Project Structure
+
+Target structure:
 
 ```txt
-chatgpt-markdown-exporter/
+.
 |-- manifest.json
 |-- package.json
+|-- vite.config.ts
 |-- src/
+|   |-- background/
+|   |   `-- serviceWorker.ts
 |   |-- popup/
 |   |   |-- popup.html
 |   |   |-- popup.ts
 |   |   `-- popup.css
 |   |-- content/
 |   |   |-- content.ts
-|   |   |-- extractConversation.ts
-|   |   |-- extractMessage.ts
-|   |   |-- extractBlocks.ts
+|   |   |-- extractors/
+|   |   |   |-- extractConversation.ts
+|   |   |   |-- extractMessage.ts
+|   |   |   `-- extractBlocks.ts
+|   |   |-- selectors/
+|   |   |   `-- messageStrategies.ts
 |   |   `-- domUtils.ts
-|   |-- background/
-|   |   `-- serviceWorker.ts
+|   |-- offscreen/
+|   |   |-- offscreen.html
+|   |   `-- offscreen.ts
 |   |-- export/
 |   |   |-- markdownWriter.ts
-|   |   |-- assetDownloader.ts
+|   |   |-- archiveBuilder.ts
 |   |   |-- zipWriter.ts
 |   |   `-- slugify.ts
-|   |-- types/
+|   |-- assets/
+|   |   |-- assetResolver.ts
+|   |   |-- assetFetcher.ts
+|   |   `-- assetNamer.ts
+|   |-- validation/
+|   |   `-- exportValidator.ts
+|   |-- domain/
 |   |   |-- conversation.ts
 |   |   |-- message.ts
-|   |   `-- asset.ts
+|   |   |-- asset.ts
+|   |   `-- warning.ts
+|   |-- runtime/
+|   |   |-- chromeApi.ts
+|   |   `-- messages.ts
 |   `-- shared/
 |       |-- constants.ts
 |       `-- logger.ts
 |-- public/
 |   `-- icons/
+|-- docs/
 `-- README.md
 ```
 
-## Chrome Extension Components
-
-### Manifest
-
-Responsibilities:
-
-- declare Manifest V3 metadata
-- define action popup
-- register content scripts
-- register service worker
-- declare permissions and host permissions
-
-Required permissions:
-
-- `activeTab`
-- `scripting`
-- `downloads`
-
-Required host permissions:
-
-- `https://chatgpt.com/*`
-- `https://chat.openai.com/*`
-
-Avoid broad permissions such as `<all_urls>` unless a future requirement proves they are necessary.
-
-### Popup
-
-Responsibilities:
-
-- show export button
-- show current status
-- trigger export
-- show warnings and failure messages
-
-The popup should stay minimal in MVP. It should not become a dashboard.
-
-### Content Script
-
-Responsibilities:
-
-- run on ChatGPT pages
-- inspect rendered DOM
-- detect conversation title
-- detect message containers
-- extract role and content blocks
-- collect asset references
-- return structured conversation data
-
-The content script owns DOM extraction because it has direct page access.
-
-### Service Worker
-
-Responsibilities:
-
-- coordinate extension messages
-- run ZIP/download workflow if needed
-- use Chrome downloads API for final file download
-
-Manifest V3 service workers are not persistent. Any state that must survive service worker shutdown should be serializable and recreated as needed.
-
-### Export Modules
-
-Responsibilities:
-
-- convert structured conversation data to Markdown
-- download or transform assets
-- generate ZIP layout
-- validate output before download
-
-## Data Flow
-
-```txt
-Popup click
--> query active tab
--> send export request to content script
--> content script extracts ConversationExport
--> export modules create Markdown and asset list
--> ZIP writer builds archive
--> downloads API saves ZIP locally
--> popup reports success/warnings/failure
-```
+Milestone 1 may omit `offscreen/`, `assets/assetFetcher.ts`, and parts of `zipWriter.ts` until the related feature is implemented. The boundaries should still be respected from the first scaffold.
 
 ## Dependency Direction
 
-Suggested dependency flow:
+Allowed dependency flow:
 
 ```txt
-popup/background
--> content/export modules
--> shared/types
+runtime entrypoints
+-> application orchestration
+-> pure domain/export/validation modules
+-> domain types
 ```
 
-DOM-specific code should stay in `src/content/`. Markdown and ZIP generation should stay in `src/export/`.
+Runtime entrypoints:
 
-## Implementation Notes
+- `src/popup/popup.ts`
+- `src/content/content.ts`
+- `src/background/serviceWorker.ts`
+- `src/offscreen/offscreen.ts` if added
 
-- Use TypeScript.
-- Use Vite for build/dev ergonomics.
-- Use JSZip for ZIP generation.
-- Consider Turndown only as a fallback for HTML-to-Markdown conversion.
-- Keep custom logic for role detection, asset replacement, code language preservation, and ChatGPT-specific DOM parsing.
+Pure modules:
+
+- `src/export/*`
+- `src/assets/assetNamer.ts`
+- `src/validation/*`
+- `src/domain/*`
+
+Rules:
+
+- Pure modules must not import `chrome`.
+- Content extractors may use DOM APIs but must not import popup or background code.
+- `runtime/chromeApi.ts` is the only planned wrapper around Chrome extension APIs.
+- Domain types must not import runtime modules.
+
+## Export Pipeline
+
+MVP pipeline:
+
+```txt
+Popup: user clicks export
+-> Service worker: validate active tab
+-> Service worker: request extraction from content script
+-> Content script: extract DOM into ConversationDraft
+-> Service worker or offscreen: build Markdown and archive
+-> Validation: validate conversation, markdown, assets, warnings
+-> Service worker: initiate ZIP download
+-> Popup: display result and warnings
+```
+
+For Milestone 2, a Markdown-only download may be used as a stepping stone, but the architecture should still model the final ZIP pipeline.
+
+## Asset Pipeline
+
+Asset processing is split into two phases:
+
+1. Content script records asset candidates from the DOM.
+2. Extension context resolves and fetches allowed asset candidates.
+
+The content script should return:
+
+- source URL or data/blob URL
+- DOM position
+- alt text if available
+- owning message/block id
+- confidence/warning metadata
+
+The asset pipeline then:
+
+- assigns local names
+- attempts blob/data conversion or controlled fetch
+- records MIME type and extension
+- replaces Markdown references with local paths when available
+- keeps remote fallback URLs with warnings when local fetch fails
+
+Do not allow the content script or page DOM to request arbitrary URLs through the extension. Asset fetch requests must be derived from extracted asset candidates and constrained by policy.
+
+## Error Handling
+
+Use structured results instead of throwing raw strings across runtime boundaries.
+
+Expected categories:
+
+- unsupported page
+- missing content script
+- no conversation detected
+- low-confidence role detection
+- unsupported block fallback
+- asset fetch failed
+- archive generation failed
+- download failed
+- internal error
+
+Errors that make the archive unusable should block export. Partial asset failures may allow export with warnings.
+
+## Manifest Boundary
+
+Baseline permissions:
+
+```json
+{
+  "permissions": ["activeTab", "scripting", "downloads"],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*"
+  ]
+}
+```
+
+Do not add `<all_urls>` for MVP.
+
+Add `offscreen` only if the offscreen document is implemented.
+
+## External References
+
+- Chrome content scripts: https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts
+- Chrome cross-origin network requests: https://developer.chrome.com/docs/extensions/develop/concepts/network-requests
+- Chrome MV3 service worker migration: https://developer.chrome.com/docs/extensions/develop/migrate/to-service-workers
+- Chrome offscreen documents: https://developer.chrome.com/blog/Offscreen-Documents-in-Manifest-v3
+- Chrome downloads API: https://developer.chrome.com/docs/extensions/reference/api/downloads
 

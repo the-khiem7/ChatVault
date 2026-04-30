@@ -7,27 +7,32 @@ This is the primary resume file for the project. Keep it current enough that wor
 ## Current State
 
 - Repository contains the initial product proposal in `PROPOSAL`.
-- Documentation foundation has been initialized in `docs/`.
+- Documentation foundation exists in `docs/`.
+- Architecture has been re-evaluated from a proposal file tree into a runtime-first project architecture.
 - No extension source code has been scaffolded yet.
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
 
 ## Next Action
 
-Scaffold the extension skeleton:
+Scaffold Milestone 1 using the runtime-first architecture:
 
 - `manifest.json`
 - `package.json`
 - Vite + TypeScript configuration
-- popup UI
-- content script
-- MV3 service worker
-- basic message passing from popup to content script
+- `src/popup/` for UI only
+- `src/background/serviceWorker.ts` for orchestration
+- `src/content/content.ts` for ChatGPT DOM extraction endpoint
+- `src/domain/` for shared domain types
+- `src/runtime/` for Chrome API/message adapters
+- basic popup -> service worker -> content script message flow
 
 The first acceptance check is:
 
 ```txt
 Click popup button
+-> service worker validates active tab
 -> content script responds with current page title and URL
+-> popup displays the response
 ```
 
 ## Active Scope
@@ -43,10 +48,12 @@ The extension must:
 
 - Use the user's real authenticated browser session.
 - Extract rendered DOM from the current ChatGPT page.
+- Keep DOM extraction separate from export/download orchestration.
 - Preserve message order and roles.
 - Preserve content as originally written as much as possible.
-- Download images/assets locally when possible.
+- Download images/assets locally when browser policy allows.
 - Avoid external servers, telemetry, analytics, and cloud sync.
+- Follow the architecture in [architecture.md](architecture.md).
 
 ## Milestones
 
@@ -58,21 +65,26 @@ Deliverables:
 
 - Chrome MV3 `manifest.json`
 - popup HTML/CSS/TypeScript
+- service worker with top-level event/message handlers
 - content script loaded on ChatGPT pages
-- service worker
-- popup-to-content-script message passing
+- runtime message contracts
+- Chrome API adapter skeleton
+- popup-to-service-worker-to-content-script message passing
 
 Acceptance:
 
 - User opens ChatGPT.
 - User clicks extension icon.
-- Popup can request and display current page title and URL from the content script.
+- Popup can request current page title and URL through the service worker.
+- Content script returns the page title and URL.
+- Popup displays the response or a clear unsupported-page error.
 
 Relevant docs:
 
 - [architecture.md](architecture.md)
 - [privacy-security.md](privacy-security.md)
 - [testing-validation.md](testing-validation.md)
+- [data-contracts.md](data-contracts.md)
 
 ### Milestone 2: Basic Text Export
 
@@ -84,14 +96,16 @@ Deliverables:
 - message container detection
 - user/assistant role detection
 - visible text extraction
-- `conversation.md` generation
-- simple Markdown download
+- `ConversationDraft` output
+- Markdown writer
+- simple Markdown download as an interim step
 
 Acceptance:
 
 - Current ChatGPT conversation exports as Markdown.
 - Message order is preserved.
 - No image support required yet.
+- Extraction and Markdown writing are separate modules.
 
 Relevant docs:
 
@@ -109,12 +123,14 @@ Deliverables:
 - list extraction
 - table extraction
 - quote extraction
-- basic fallback HTML-to-Markdown conversion
+- unknown block fallback
+- basic fallback HTML-to-Markdown conversion if needed
 
 Acceptance:
 
 - Technical conversations remain readable in Markdown.
 - Code block content is not flattened into plain paragraphs.
+- Unsupported content is preserved as visible text with warnings.
 
 Relevant docs:
 
@@ -127,22 +143,27 @@ Status: Not started
 
 Deliverables:
 
-- detect image nodes in message content
-- fetch image blobs when browser policy allows
-- convert data/blob URLs to files
+- detect image nodes as asset candidates
+- asset naming
+- asset policy checks
+- data/blob URL conversion where possible
+- controlled fetch for allowed image blobs
 - store assets under `assets/`
-- replace Markdown image URLs with local asset paths
+- replace Markdown links with local asset paths
 - warn when remote fallback is required
 
 Acceptance:
 
 - Uploaded/generated images are included in ZIP where possible.
 - `conversation.md` references local asset paths where possible.
+- Remote fallback links include warnings.
+- The extension does not expose arbitrary URL fetching.
 
 Relevant docs:
 
 - [extraction-strategy.md](extraction-strategy.md)
 - [data-contracts.md](data-contracts.md)
+- [privacy-security.md](privacy-security.md)
 
 ### Milestone 5: ZIP Export
 
@@ -151,14 +172,17 @@ Status: Not started
 Deliverables:
 
 - JSZip integration
-- archive layout generation
+- archive artifact contract
+- archive manifest generation
 - single ZIP download through Chrome downloads API
+- offscreen document only if proven necessary
 
 Acceptance:
 
 - User receives `chatgpt-export-<slug>.zip`.
 - ZIP contains `conversation.md`.
 - ZIP contains `assets/` when images exist.
+- ZIP paths match Markdown references.
 
 Relevant docs:
 
@@ -176,11 +200,13 @@ Deliverables:
 - warning states
 - progress UI
 - retry affordance
+- popup close/service worker lifecycle checks
 
 Acceptance:
 
-- Extension handles common ChatGPT DOM variations gracefully.
+- Extension handles common ChatGPT UI variations gracefully.
 - Failures are visible to the user and not silent.
+- MV3 lifecycle behavior does not corrupt export output.
 
 Relevant docs:
 
@@ -199,7 +225,9 @@ MVP is complete when:
 - Markdown contains all detected user and assistant messages in order.
 - Code blocks are preserved.
 - Images are referenced locally where possible.
+- Asset fallback warnings are visible.
 - No external server is used.
+- Architecture boundaries in [architecture.md](architecture.md) are respected.
 
 ## Progress Log
 
@@ -207,4 +235,6 @@ MVP is complete when:
 
 - Accepted `PROPOSAL` as the initial product source.
 - Created project documentation foundation in `docs/`.
+- Reworked project architecture docs from proposal recommendation into runtime-first extension architecture.
+- Updated related requirements, contracts, extraction, privacy, testing, risks, and decisions docs.
 

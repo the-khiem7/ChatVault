@@ -78,3 +78,83 @@ Consequences:
 - validation must ensure Markdown asset references match ZIP contents
 - final download can use Chrome downloads API
 
+## ADR-005: Use Runtime-First Extension Architecture
+
+Status: Accepted
+
+Context:
+
+The proposal's file structure was a recommendation, not an evaluated project architecture. Chrome MV3 has distinct runtime contexts with different capabilities and lifecycle rules.
+
+Decision:
+
+Define architecture by runtime ownership first:
+
+- popup owns UI only
+- content script owns DOM extraction only
+- service worker owns orchestration and privileged Chrome APIs
+- pure modules own export, archive, validation, and domain transformations
+- offscreen document is conditional
+
+Consequences:
+
+- fewer hidden MV3 lifecycle bugs
+- better unit-test coverage for pure logic
+- clearer permission and security boundaries
+- slightly more upfront structure than the proposal's simple tree
+
+## ADR-006: Defer Offscreen Document Until Needed
+
+Status: Accepted
+
+Context:
+
+Offscreen documents can provide DOM/window APIs that service workers lack, but adding them increases permissions and runtime complexity.
+
+Decision:
+
+Do not scaffold offscreen document in Milestone 1. Add it only when ZIP/blob/download implementation demonstrates a concrete need.
+
+Consequences:
+
+- MVP skeleton stays lean
+- `offscreen` permission is not requested prematurely
+- architecture already reserves a place for offscreen if needed later
+
+## ADR-007: Split Asset Discovery From Asset Fetching
+
+Status: Accepted
+
+Context:
+
+The content script can inspect visible DOM, but cross-origin asset fetching and privileged downloads should not be controlled directly by page data.
+
+Decision:
+
+Content script produces asset candidates. Extension runtime resolves and fetches candidates under explicit policy.
+
+Consequences:
+
+- asset pipeline is safer
+- content script is easier to test
+- remote fallback warnings become part of the export contract
+- broad host permissions are not required for MVP
+
+## ADR-008: Wrap Chrome APIs Behind Runtime Adapters
+
+Status: Accepted
+
+Context:
+
+Direct `chrome` imports throughout the codebase would make unit testing difficult and blur runtime boundaries.
+
+Decision:
+
+Use a thin runtime adapter such as `src/runtime/chromeApi.ts` for Chrome extension APIs.
+
+Consequences:
+
+- pure modules remain testable
+- runtime API usage is easier to audit
+- integration tests can mock extension APIs more easily
+

@@ -6,9 +6,10 @@ This is the primary resume file for the project. Keep it current enough that wor
 
 ## Current State
 
-- Repository contains the initial product proposal in `PROPOSAL`.
+- The original planning brief has been incorporated into `docs/`.
 - Documentation foundation exists in `docs/`.
-- Architecture has been re-evaluated from a proposal file tree into a runtime-first project architecture.
+- Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
+- Root `README.md` introduces the project.
 - No extension source code has been scaffolded yet.
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
 
@@ -233,8 +234,8 @@ MVP is complete when:
 
 ### 2026-04-30
 
-- Accepted `PROPOSAL` as the initial product source.
+- Incorporated the initial planning brief into durable docs.
 - Created project documentation foundation in `docs/`.
-- Reworked project architecture docs from proposal recommendation into runtime-first extension architecture.
+- Reworked project architecture docs from initial recommendation into runtime-first extension architecture.
 - Updated related requirements, contracts, extraction, privacy, testing, risks, and decisions docs.
-
+- Removed the obsolete planning brief file and added root `README.md`.

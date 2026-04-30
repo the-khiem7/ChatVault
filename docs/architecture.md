@@ -2,7 +2,7 @@
 
 Updated: 2026-04-30
 
-This document is the project architecture source of truth. The proposal contains useful recommendations, but this file records the evaluated architecture that implementation should follow.
+This document is the project architecture source of truth. The original planning brief has been incorporated into the docs; this file records the evaluated architecture that implementation should follow.
 
 ## Architecture Summary
 
@@ -16,11 +16,11 @@ Build a Chrome Manifest V3 extension with a runtime-first design:
 
 The architecture avoids Playwright, login automation, backend services, cloud sync, telemetry, and broad host permissions.
 
-## Evaluation of Proposal Structure
+## Evaluation of Initial Structure
 
-The proposal's structure is directionally useful, but it mixes runtime contexts and implementation modules. The adjusted architecture keeps the same product shape while making Chrome MV3 boundaries explicit.
+The initial structure was directionally useful, but it mixed runtime contexts and implementation modules. The adjusted architecture keeps the same product shape while making Chrome MV3 boundaries explicit.
 
-Accepted from proposal:
+Accepted from the initial brief:
 
 - Chrome Manifest V3 extension
 - popup trigger
@@ -32,7 +32,7 @@ Accepted from proposal:
 - modular DOM extraction
 - local ZIP archive output
 
-Changed from proposal:
+Changed from the initial brief:
 
 - `export/` is not a runtime owner. It contains pure logic and wrappers that can be called by popup, service worker, or offscreen code.
 - asset download is separated from DOM extraction because content scripts are subject to page-origin request constraints.
@@ -294,4 +294,3 @@ Add `offscreen` only if the offscreen document is implemented.
 - Chrome MV3 service worker migration: https://developer.chrome.com/docs/extensions/develop/migrate/to-service-workers
 - Chrome offscreen documents: https://developer.chrome.com/blog/Offscreen-Documents-in-Manifest-v3
 - Chrome downloads API: https://developer.chrome.com/docs/extensions/reference/api/downloads
-

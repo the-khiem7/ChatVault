@@ -29,7 +29,7 @@ The core product principle is lossless export:
 
 ## Architecture Status
 
-The proposal contains the original recommended structure. The accepted project architecture is now [architecture.md](architecture.md).
+The original planning brief has been incorporated into this documentation set. The accepted project architecture is [architecture.md](architecture.md).
 
 Key architectural decision:
 
@@ -62,4 +62,3 @@ When resuming this project:
 4. Read only the relevant detail docs listed under the active milestone.
 5. Update [roadmap.md](roadmap.md) after every meaningful implementation step.
 6. Record irreversible or important technical choices in [decisions.md](decisions.md).
-

@@ -84,7 +84,7 @@ Status: Accepted
 
 Context:
 
-The proposal's file structure was a recommendation, not an evaluated project architecture. Chrome MV3 has distinct runtime contexts with different capabilities and lifecycle rules.
+The initial file structure was a recommendation, not an evaluated project architecture. Chrome MV3 has distinct runtime contexts with different capabilities and lifecycle rules.
 
 Decision:
 
@@ -101,7 +101,7 @@ Consequences:
 - fewer hidden MV3 lifecycle bugs
 - better unit-test coverage for pure logic
 - clearer permission and security boundaries
-- slightly more upfront structure than the proposal's simple tree
+- slightly more upfront structure than the initial simple tree
 
 ## ADR-006: Defer Offscreen Document Until Needed
 
@@ -157,4 +157,3 @@ Consequences:
 - pure modules remain testable
 - runtime API usage is easier to audit
 - integration tests can mock extension APIs more easily
-

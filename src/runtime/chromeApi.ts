@@ -10,7 +10,6 @@ export type ChromeApi = {
   getActiveTab(): Promise<ActiveTab | undefined>;
   injectContentScript?(tabId: number): Promise<void>;
   sendMessageToTab<T>(tabId: number, request: RuntimeRequest): Promise<RuntimeResponse<T>>;
-  downloadMarkdown?(filename: string, markdown: string): Promise<void>;
   fetchAsset?(sourceUrl: string): Promise<ResolvedAssetPayload>;
 };
 
@@ -28,14 +27,6 @@ export function createChromeApi(): ChromeApi {
     },
     async sendMessageToTab<T>(tabId: number, request: RuntimeRequest) {
       return chrome.tabs.sendMessage(tabId, request) as Promise<RuntimeResponse<T>>;
-    },
-    async downloadMarkdown(filename: string, markdown: string) {
-      const url = `data:text/markdown;charset=utf-8,${encodeURIComponent(markdown)}`;
-      await chrome.downloads.download({
-        url,
-        filename,
-        saveAs: true
-      });
     },
     async fetchAsset(sourceUrl: string) {
       const response = await fetch(sourceUrl);

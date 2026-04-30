@@ -1,5 +1,6 @@
 import type { ExportError, ExportWarning } from "../domain/warning";
 import type { ConversationDraft } from "../domain/conversation";
+import type { FolderExportFile } from "../export/folderExportBuilder";
 
 export type PageSummary = {
   title: string;
@@ -19,14 +20,16 @@ export type RuntimeRequest =
   | { type: "EXTRACT_PAGE_SUMMARY" }
   | { type: "EXTRACT_CONVERSATION" };
 
-export type MarkdownExportResult = {
-  filename: string;
+export type FolderExportResult = {
+  rootFolder: string;
+  markdownPath: string;
   title: string;
   messageCount: number;
   assetCandidateCount: number;
   documentImageCount: number;
   messageImageCount: number;
   assetCount: number;
+  files: FolderExportFile[];
 };
 
 export type ConversationExtractionResult = ConversationDraft;

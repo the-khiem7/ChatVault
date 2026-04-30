@@ -140,6 +140,16 @@ Minimum popup states:
 - Done
 - Failed
 
+Milestone 5 folder-export UI rules:
+
+- Popup has separate `Choose Folder` and `Export Current Chat` controls.
+- If export starts without a selected folder, the popup opens the folder picker.
+- MVP keeps the selected folder only for the current popup/session.
+- If folder permission is unavailable or expires, ask the user to choose a folder again.
+- If File System Access API is unavailable, show `Folder export is not supported in this browser. Use desktop Chrome.`
+- Success should report the exported slug folder, message count, and saved image count.
+- Partial asset failures should not block Markdown export; keep remote fallback links and show warnings.
+
 Warnings should be explicit, for example:
 
 - `Not a supported ChatGPT conversation page.`

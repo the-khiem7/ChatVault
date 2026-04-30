@@ -87,11 +87,14 @@ These checks protect the project architecture from drifting back into a mixed ru
 ### Milestone 5
 
 - User can choose an export folder before exporting.
+- Export starts folder picker if no folder is selected.
 - Export creates `<slug>/conversation.md`.
 - Export creates `<slug>/assets/` when images exist.
 - Written asset paths match Markdown references.
 - `conversation.md` opens locally with resolved local images.
+- Expired or missing folder permission asks the user to choose a folder again.
 - Unsupported File System Access API states are visible and clear.
+- Partial asset failures still write Markdown with remote fallback links and warnings.
 
 ### Milestone 6
 

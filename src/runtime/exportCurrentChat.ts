@@ -1,14 +1,13 @@
 import type { ConversationDraft } from "../domain/conversation";
 import { resolveAssetCandidates } from "../assets/assetResolver";
-import { writeMarkdown } from "../export/markdownWriter";
-import { slugify } from "../export/slugify";
+import { buildFolderExportArtifact } from "../export/folderExportBuilder";
 import type { ChromeApi } from "./chromeApi";
-import type { MarkdownExportResult, RuntimeResponse } from "./messages";
+import type { FolderExportResult, RuntimeResponse } from "./messages";
 import { isSupportedChatGptUrl } from "./urlSupport";
 
 export async function exportCurrentChat(
   chromeApi: ChromeApi
-): Promise<RuntimeResponse<MarkdownExportResult>> {
+): Promise<RuntimeResponse<FolderExportResult>> {
   const tab = await chromeApi.getActiveTab();
 
   if (!tab?.id || !isSupportedChatGptUrl(tab.url)) {
@@ -44,25 +43,26 @@ export async function exportCurrentChat(
     const assetResolution = await resolveAssetCandidates(draft.assetCandidates, {
       fetchAsset: chromeApi.fetchAsset
     });
-    const markdown = writeMarkdown(draft, { assetReferences: assetResolution.assetReferences });
-    const filename = `chatgpt-export-${slugify(draft.title)}.md`;
-    if (!chromeApi.downloadMarkdown) {
-      throw new Error("Markdown download is unavailable.");
-    }
-    await chromeApi.downloadMarkdown(filename, markdown);
+    const artifact = buildFolderExportArtifact(draft, {
+      assetReferences: assetResolution.assetReferences,
+      assetFiles: assetResolution.assetFiles,
+      warnings: [...(draftResponse.warnings ?? []), ...draft.warnings, ...assetResolution.warnings]
+    });
 
     return {
       ok: true,
       data: {
-        filename,
+        rootFolder: artifact.rootFolder,
+        markdownPath: artifact.manifest.markdownPath,
         title: draft.title,
         messageCount: draft.messages.length,
         assetCandidateCount: draft.assetCandidates.length,
         documentImageCount: draft.diagnostics?.documentImageCount ?? 0,
         messageImageCount: draft.diagnostics?.messageImageCount ?? 0,
-        assetCount: assetResolution.assets.filter((asset) => asset.status === "saved").length
+        assetCount: assetResolution.assets.filter((asset) => asset.status === "saved").length,
+        files: artifact.files
       },
-      warnings: [...(draftResponse.warnings ?? []), ...draft.warnings, ...assetResolution.warnings]
+      warnings: artifact.warnings
     };
   } catch {
     return {

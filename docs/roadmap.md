@@ -11,19 +11,22 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.4.3` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.5.0` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
 
 ## Next Action
 
-Start Milestone 5 Folder Export using the File System Access API:
+Manually validate Milestone 5 Folder Export in Chrome:
 
 - let the user choose an export folder before exporting
+- use a dedicated `Choose Folder` control and also prompt for a folder if export starts without one
+- keep the selected folder only for the current popup/session in MVP
 - build a folder export artifact with `conversation.md` and resolved asset bytes
 - write `<slug>/conversation.md`
 - write resolved assets under `<slug>/assets/`
 - validate written asset paths against Markdown references
 - show a clear unsupported-browser state when File System Access API is unavailable
+- allow partial asset failures to export Markdown with remote fallback warnings
 
 Milestone 1 acceptance check is implemented and ready for manual Chrome validation:
 
@@ -173,25 +176,31 @@ Relevant docs:
 
 ### Milestone 5: Folder Export
 
-Status: Not started
+Status: Implemented pending manual Chrome validation
 
 Deliverables:
 
 - user-selected export folder through File System Access API
+- dedicated `Choose Folder` popup control
+- automatic folder picker prompt when exporting without a selected folder
+- session-only selected folder handle in MVP
 - folder export artifact contract
 - export manifest generation
 - direct writing of `conversation.md`
 - direct writing of resolved assets under `assets/`
 - fallback or clear unsupported-browser error when File System Access API is unavailable
+- partial asset failure handling that still writes Markdown with remote fallback links
 - offscreen document only if popup lifecycle proves insufficient
 
 Acceptance:
 
 - User chooses an export folder before exporting.
+- If the user clicks export before choosing a folder, the popup asks for one.
 - Extension creates `<slug>/conversation.md` in the selected folder.
 - Extension creates `<slug>/assets/` when images exist.
 - Written asset paths match Markdown references.
 - User can open `conversation.md` locally and see resolved local images without unzipping.
+- If folder permission expires, the popup asks the user to choose the folder again.
 
 Relevant docs:
 
@@ -289,3 +298,8 @@ MVP is complete when:
 - Preserved buttons that wrap `img[src]` so the extractor does not remove uploaded images before asset candidate detection.
 - Updated active Milestone 4 patch version to `0.4.3`.
 - Manually validated Milestone 4 Patch 3 in Chrome: popup reported 69 message images, 69 image candidates, and 69 saved assets; exported Markdown contained 69 local `assets/...` image references.
+- Started Milestone 5 at version `0.5.0`.
+- Implemented folder export artifact generation with `conversation.md` and resolved asset bytes.
+- Replaced Markdown-only download handoff with popup-based File System Access API folder writing.
+- Added `Choose Folder` popup control, automatic folder picker on export when needed, session-only folder handle, and folder export status messages.
+- Added unit coverage for folder export artifact building, nested folder writing, and runtime folder export result.

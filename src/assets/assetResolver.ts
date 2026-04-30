@@ -18,7 +18,15 @@ export type AssetResolverOptions = {
 export type AssetResolutionResult = {
   assets: ExportAsset[];
   assetReferences: Map<string, AssetReference>;
+  assetFiles: ResolvedAssetFile[];
   warnings: ExportWarning[];
+};
+
+export type ResolvedAssetFile = {
+  assetId: string;
+  relativePath: string;
+  mimeType: string;
+  bytes: ArrayBuffer;
 };
 
 export async function resolveAssetCandidates(
@@ -27,6 +35,7 @@ export async function resolveAssetCandidates(
 ): Promise<AssetResolutionResult> {
   const sortedCandidates = [...candidates].sort((left, right) => left.domOrder - right.domOrder);
   const assets: ExportAsset[] = [];
+  const assetFiles: ResolvedAssetFile[] = [];
   const assetReferences = new Map<string, AssetReference>();
   const warnings: ExportWarning[] = [];
 
@@ -37,19 +46,22 @@ export async function resolveAssetCandidates(
     if (resolved.reference) {
       assetReferences.set(candidate.id, resolved.reference);
     }
+    if (resolved.file) {
+      assetFiles.push(resolved.file);
+    }
     if (resolved.warning) {
       warnings.push(resolved.warning);
     }
   }
 
-  return { assets, assetReferences, warnings };
+  return { assets, assetReferences, assetFiles, warnings };
 }
 
 async function resolveCandidate(
   candidate: AssetCandidate,
   index: number,
   options: AssetResolverOptions
-): Promise<{ asset: ExportAsset; reference?: AssetReference; warning?: ExportWarning }> {
+): Promise<{ asset: ExportAsset; reference?: AssetReference; file?: ResolvedAssetFile; warning?: ExportWarning }> {
   if (!candidate.messageId || !candidate.blockId || !isAllowedAssetSource(candidate.sourceUrl)) {
     return fallbackAsset(candidate, index, "Asset candidate did not pass export policy checks.");
   }
@@ -77,7 +89,13 @@ async function resolveCandidate(
         status: "saved",
         warningIds: []
       },
-      reference: { markdownPath: localPath }
+      reference: { markdownPath: localPath },
+      file: {
+        assetId: candidate.id,
+        relativePath: localPath,
+        mimeType: payload.mimeType ?? "application/octet-stream",
+        bytes: payload.bytes
+      }
     };
   } catch {
     return fallbackAsset(candidate, index, "Asset could not be saved locally and remains a remote link.");

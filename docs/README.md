@@ -1,14 +1,14 @@
 # Project Documentation
 
-Updated: 2026-04-30
+Updated: 2026-05-01
 
 This folder is the durable working memory for the project. It should contain enough context for a developer or agent to resume work without relying on previous chat history.
 
 ## Project
 
-ChatGPT Markdown Exporter is a privacy-first Chrome Manifest V3 extension that exports the currently opened ChatGPT conversation into a local ZIP archive.
+ChatGPT Markdown Exporter is a privacy-first Chrome Manifest V3 extension that exports the currently opened ChatGPT conversation into a user-selected local folder.
 
-The archive contains:
+The export folder contains:
 
 ```txt
 <conversation-slug>/
@@ -36,7 +36,7 @@ Key architectural decision:
 - runtime-first Chrome MV3 architecture
 - popup is UI only
 - content script is DOM extraction only
-- service worker orchestrates Chrome APIs and download handoff
+- service worker orchestrates Chrome APIs and export handoff
 - export, asset naming, validation, and domain logic stay testable as pure modules
 - offscreen document is conditional, not part of the initial skeleton
 
@@ -45,7 +45,7 @@ Key architectural decision:
 - [roadmap.md](roadmap.md): source of truth for progress, milestones, current state, and resume instructions.
 - [product-requirements.md](product-requirements.md): goals, MVP scope, non-goals, user flow, acceptance criteria, and architecture constraints.
 - [architecture.md](architecture.md): evaluated project architecture, runtime boundaries, module ownership, data flow, and Chrome MV3 constraints.
-- [data-contracts.md](data-contracts.md): TypeScript domain types, runtime messages, archive artifact, markdown format, ZIP layout, and validation contract.
+- [data-contracts.md](data-contracts.md): TypeScript domain types, runtime messages, folder export artifact, markdown format, folder layout, and validation contract.
 - [extraction-strategy.md](extraction-strategy.md): DOM extraction strategy, block parsing rules, asset candidate detection, and fallback order.
 - [privacy-security.md](privacy-security.md): privacy rules, permission boundaries, runtime trust boundary, and local-first constraints.
 - [testing-validation.md](testing-validation.md): architecture boundary checks, test scenarios, manual QA, and MVP definition of done.

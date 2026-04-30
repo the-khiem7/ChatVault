@@ -1,6 +1,6 @@
 # Decisions
 
-Updated: 2026-04-30
+Updated: 2026-05-01
 
 Record important decisions here so future work can continue without relying on chat history.
 
@@ -57,12 +57,12 @@ All processing happens locally in the browser. MVP must not use an external serv
 Consequences:
 
 - user data stays local
-- implementation must handle ZIP and asset processing client-side
+- implementation must handle folder export and asset processing client-side
 - debugging logs must avoid leaking full conversation content
 
 ## ADR-004: ZIP Is the Primary Export Format
 
-Status: Accepted
+Status: Superseded by ADR-010
 
 Context:
 
@@ -113,7 +113,7 @@ Offscreen documents can provide DOM/window APIs that service workers lack, but a
 
 Decision:
 
-Do not scaffold offscreen document in Milestone 1. Add it only when ZIP/blob/download implementation demonstrates a concrete need.
+Do not scaffold offscreen document in Milestone 1. Add it only when export writing demonstrates a concrete need.
 
 Consequences:
 
@@ -176,3 +176,35 @@ Consequences:
 - Chrome extension builds expose the same version as package metadata
 - documentation and release tracking stay aligned with milestone progress
 - every future code patch must include a version bump
+
+## ADR-010: Folder Export Replaces ZIP as Primary Format
+
+Status: Accepted
+
+Context:
+
+The ZIP-first design preserved relative Markdown asset paths, but it adds friction for the target workflows. Users exporting to Obsidian, Git repositories, local knowledge bases, or RAG staging folders want `conversation.md` and `assets/` available immediately without unzipping after every export. The Milestone 4 asset pipeline already models local asset paths and bytes, so the remaining output problem is writing a file tree rather than packaging it.
+
+Decision:
+
+MVP primary output is a user-selected local folder tree written through the File System Access API:
+
+```txt
+<conversation-slug>/
+|-- conversation.md
+`-- assets/
+    |-- 001.png
+    `-- ...
+```
+
+ZIP export is removed from the MVP default path. It may return later as an optional fallback or alternate export format, but Milestone 5 implements direct folder export.
+
+Consequences:
+
+- users do not need to unzip exports
+- Markdown local image paths work immediately after export
+- Chrome remains the primary MVP browser target because File System Access API is Chromium-oriented
+- `showDirectoryPicker()` must run in a document-capable context, not in the service worker
+- service worker remains the orchestrator, while popup or an offscreen/document context owns folder selection and file writing
+- validation must ensure written files match Markdown references
+- unsupported browsers must show a clear fallback or unsupported-browser state

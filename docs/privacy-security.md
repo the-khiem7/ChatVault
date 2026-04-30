@@ -1,6 +1,6 @@
 # Privacy and Security
 
-Updated: 2026-04-30
+Updated: 2026-05-01
 
 ## Privacy Principle
 
@@ -66,7 +66,7 @@ Conversation content should exist only in:
 
 - the active ChatGPT page DOM
 - extension runtime memory during export
-- the generated local ZIP file
+- the generated local export folder selected by the user
 
 Do not persist conversation content in Chrome extension storage unless a future feature requires it and a decision is recorded.
 
@@ -117,4 +117,3 @@ Avoid logs containing:
 - Chrome content scripts: https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts
 - Chrome cross-origin network requests: https://developer.chrome.com/docs/extensions/develop/concepts/network-requests
 - Chrome MV3 service worker migration: https://developer.chrome.com/docs/extensions/develop/migrate/to-service-workers
-

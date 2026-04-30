@@ -1,6 +1,6 @@
 # Testing and Validation
 
-Updated: 2026-04-30
+Updated: 2026-05-01
 
 ## Test Strategy
 
@@ -12,7 +12,7 @@ Pure modules to unit test:
 - Markdown writer
 - table conversion
 - code block conversion
-- archive manifest generation
+- folder export manifest generation
 - validation logic
 - asset naming
 - warning aggregation
@@ -34,7 +34,8 @@ Runtime/manual validation:
 - active tab validation
 - Chrome downloads behavior
 - optional offscreen document wiring
-- ZIP file content
+- File System Access API folder writing
+- exported folder content
 
 ## Architecture Boundary Tests
 
@@ -85,11 +86,12 @@ These checks protect the project architecture from drifting back into a mixed ru
 
 ### Milestone 5
 
-- ZIP contains `<slug>/conversation.md`.
-- ZIP contains `<slug>/assets/` when images exist.
-- ZIP filename is `chatgpt-export-<slug>.zip`.
-- ZIP asset paths match Markdown references.
-- Download is initiated through the extension runtime.
+- User can choose an export folder before exporting.
+- Export creates `<slug>/conversation.md`.
+- Export creates `<slug>/assets/` when images exist.
+- Written asset paths match Markdown references.
+- `conversation.md` opens locally with resolved local images.
+- Unsupported File System Access API states are visible and clear.
 
 ### Milestone 6
 
@@ -123,9 +125,8 @@ Before considering MVP complete:
 - role headings exist
 - Markdown is not empty
 - code blocks are preserved
-- image references match ZIP assets or have warnings
-- ZIP opens locally
+- image references match written assets or have warnings
+- exported folder opens locally
 - no external service receives content
 - warnings are shown to the user
 - implementation follows [architecture.md](architecture.md)
-

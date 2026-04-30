@@ -1,6 +1,6 @@
 # Risks
 
-Updated: 2026-04-30
+Updated: 2026-05-01
 
 ## ChatGPT DOM Changes
 
@@ -39,7 +39,7 @@ Mitigation:
 - support data/blob URL conversion where available
 - fetch only policy-approved asset candidates
 - keep remote URL fallback with warning
-- validate local asset references before ZIP download
+- validate local asset references before writing folder export
 - avoid broad permissions as the default response
 
 ## Permission Creep
@@ -71,7 +71,7 @@ Mitigation:
 
 Risk:
 
-Manifest V3 service workers are ephemeral. Long-running export or ZIP operations can be interrupted if state is held only in globals.
+Manifest V3 service workers are ephemeral. Long-running export or folder writing operations can be interrupted if state is held only in globals.
 
 Mitigation:
 
@@ -105,4 +105,3 @@ Mitigation:
 - keep MVP limited to current ChatGPT conversation export
 - track future ideas outside the active roadmap
 - do not implement non-goals without updating product requirements
-

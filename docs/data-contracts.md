@@ -1,6 +1,6 @@
 # Data Contracts
 
-Updated: 2026-04-30
+Updated: 2026-05-01
 
 These contracts define the data exchanged between extraction, export, validation, and runtime orchestration. Keep runtime messages explicit so the project can be tested without Chrome where possible.
 
@@ -28,7 +28,7 @@ Rules:
 
 ## ConversationExport
 
-`ConversationExport` is the validated final domain object used to write Markdown and ZIP output.
+`ConversationExport` is the validated final domain object used to write Markdown and folder output.
 
 ```ts
 export type ConversationExport = {
@@ -169,7 +169,7 @@ Expected warning codes:
 - `TABLE_CONVERSION_FALLBACK`
 - `ASSET_FETCH_FAILED`
 - `REMOTE_ASSET_FALLBACK`
-- `ZIP_GENERATION_FAILED`
+- `FOLDER_EXPORT_FAILED`
 - `DOWNLOAD_FAILED`
 
 ## Runtime Messages
@@ -181,8 +181,8 @@ export type RuntimeRequest =
   | { type: "GET_ACTIVE_TAB_STATUS" }
   | { type: "EXPORT_CURRENT_CHAT" }
   | { type: "EXTRACT_CONVERSATION" }
-  | { type: "BUILD_ARCHIVE"; draft: ConversationDraft }
-  | { type: "DOWNLOAD_ARCHIVE"; archive: ArchiveArtifact };
+  | { type: "BUILD_FOLDER_EXPORT"; draft: ConversationDraft }
+  | { type: "WRITE_FOLDER_EXPORT"; exportArtifact: FolderExportArtifact };
 
 export type RuntimeResponse<T> =
   | { ok: true; data: T; warnings?: ExportWarning[] }
@@ -196,18 +196,23 @@ Rules:
 - Do not throw unstructured errors across runtime boundaries.
 - Large binary payloads should be introduced carefully and tested against MV3 lifecycle behavior.
 
-## Archive Artifact
+## Folder Export Artifact
 
 ```ts
-export type ArchiveArtifact = {
-  filename: string;
-  mimeType: "application/zip" | "text/markdown";
-  bytes: Blob | ArrayBuffer;
-  manifest: ArchiveManifest;
+export type FolderExportArtifact = {
+  rootFolder: string;
+  files: ExportFile[];
+  manifest: FolderExportManifest;
   warnings: ExportWarning[];
 };
 
-export type ArchiveManifest = {
+export type ExportFile = {
+  relativePath: string;
+  mimeType: string;
+  bytes: Blob | ArrayBuffer | string;
+};
+
+export type FolderExportManifest = {
   rootFolder: string;
   markdownPath: string;
   assetPaths: string[];
@@ -249,18 +254,12 @@ Rules:
 - Preserve code fences.
 - Prefer local image paths.
 
-## ZIP Layout Contract
+## Folder Layout Contract
 
 ```txt
 <slug>/conversation.md
 <slug>/assets/001.png
 <slug>/assets/002.jpg
-```
-
-ZIP filename:
-
-```txt
-chatgpt-export-<slug>.zip
 ```
 
 ## Validation Contract
@@ -271,7 +270,7 @@ Before download, validate:
 - conversation has at least one message
 - messages are ordered
 - Markdown is not empty
-- every local Markdown asset reference exists in ZIP
+- every local Markdown asset reference exists in the exported folder artifact
 - code blocks are not empty unless source was empty
 - image references match assets or remote fallback warnings
 - warnings are included in the final response

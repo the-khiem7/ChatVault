@@ -1,10 +1,10 @@
 # Product Requirements
 
-Updated: 2026-04-30
+Updated: 2026-05-01
 
 ## Product Goal
 
-Build a Chrome Manifest V3 extension that exports the currently opened ChatGPT conversation into a portable local Markdown archive with assets.
+Build a Chrome Manifest V3 extension that exports the currently opened ChatGPT conversation into a portable local Markdown folder with assets.
 
 This is a lossless exporter, not a summarizer or note generator.
 
@@ -40,7 +40,7 @@ The product must be implemented as a local Chrome MV3 extension with these const
 
 - Use the user's existing authenticated Chrome session.
 - Read the rendered ChatGPT page through a content script.
-- Keep DOM extraction separate from archive/download orchestration.
+- Keep DOM extraction separate from export writing orchestration.
 - Keep final download controlled by extension runtime code, not page code.
 - Keep export transformation logic testable outside Chrome APIs.
 - Do not use Playwright, a backend server, or the OpenAI API for MVP.
@@ -62,7 +62,7 @@ In scope:
 - detect visible images and asset candidates
 - save Markdown file
 - save local assets where browser policy allows
-- package result as ZIP
+- write result to a user-selected local folder
 - show warnings for partial export issues
 
 Out of scope for MVP:
@@ -104,25 +104,19 @@ Possible future targets:
 1. User opens a ChatGPT conversation.
 2. User clicks the extension icon.
 3. Popup opens.
-4. User clicks `Export Current Chat`.
-5. Extension validates the active tab.
-6. Content script scans the current page.
-7. Extension creates Markdown from structured extraction data.
-8. Extension downloads or converts assets where policy allows.
-9. Extension validates output.
-10. Extension creates ZIP.
-11. Extension downloads `chatgpt-export-<slug>.zip`.
+4. User chooses an export folder if one is not already selected.
+5. User clicks `Export Current Chat`.
+6. Extension validates the active tab.
+7. Content script scans the current page.
+8. Extension creates Markdown from structured extraction data.
+9. Extension downloads or converts assets where policy allows.
+10. Extension validates output.
+11. Extension writes `<slug>/conversation.md` and `<slug>/assets/` into the selected folder.
 12. Popup shows success, warnings, or failure.
 
 ## Output
 
-ZIP file:
-
-```txt
-chatgpt-export-<slug>.zip
-```
-
-ZIP content:
+Folder content:
 
 ```txt
 <slug>/
@@ -142,8 +136,7 @@ Minimum popup states:
 - Extracting
 - Building Markdown
 - Resolving assets
-- Creating ZIP
-- Downloading
+- Writing files
 - Done
 - Failed
 
@@ -165,7 +158,6 @@ The MVP is acceptable when:
 - code blocks remain fenced code blocks
 - images are local when browser policy allows
 - remote image fallback warnings are reported
-- ZIP asset paths match Markdown references
+- written asset paths match Markdown references
 - no external server receives conversation content
 - implementation follows the runtime boundaries in [architecture.md](architecture.md)
-

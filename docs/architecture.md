@@ -1,6 +1,6 @@
 # Architecture
 
-Updated: 2026-04-30
+Updated: 2026-05-01
 
 This document is the project architecture source of truth. The original planning brief has been incorporated into the docs; this file records the evaluated architecture that implementation should follow.
 
@@ -11,8 +11,8 @@ Build a Chrome Manifest V3 extension with a runtime-first design:
 - Popup owns UI state and user interaction only.
 - Content script owns ChatGPT DOM inspection only.
 - Service worker owns extension orchestration, tab validation, Chrome API calls, and download handoff.
-- Pure project modules own Markdown writing, archive modeling, validation, slugging, and asset naming.
-- Offscreen document is optional and introduced only if ZIP/blob/download work needs a document context or needs to outlive the popup.
+- Pure project modules own Markdown writing, folder export modeling, validation, slugging, and asset naming.
+- Offscreen document is optional and introduced only if folder writing needs a document context that must outlive the popup.
 
 The architecture avoids Playwright, login automation, backend services, cloud sync, telemetry, and broad host permissions.
 
@@ -28,9 +28,8 @@ Accepted from the initial brief:
 - service worker
 - TypeScript
 - Vite
-- JSZip
 - modular DOM extraction
-- local ZIP archive output
+- local folder output
 
 Changed from the initial brief:
 
@@ -78,7 +77,7 @@ Role:
 Rules:
 
 - Do not call `chrome.downloads`.
-- Do not build the final ZIP.
+- Do not write final export files.
 - Do not fetch arbitrary remote assets.
 - Do not depend on one selector.
 - Preserve unknown visible content instead of silently dropping it.
@@ -93,7 +92,7 @@ Role:
 - validate active tab and supported URL
 - coordinate popup, content script, and optional offscreen document
 - call privileged Chrome APIs such as downloads
-- ensure final download is initiated with an explicit archive artifact
+- coordinate final folder export from an explicit export artifact
 
 Rules:
 
@@ -108,7 +107,7 @@ Rules:
 Role:
 
 - provide a document context for operations service workers cannot perform
-- handle ZIP/blob/object URL flows if service worker or popup context proves insufficient
+- handle folder writing if popup lifecycle proves insufficient
 
 Rules:
 
@@ -117,7 +116,7 @@ Rules:
 - Communicates through runtime messages.
 - Added only with the `offscreen` permission and a recorded decision update.
 
-Use it when there is concrete evidence that a document context is required for archive generation or download handoff.
+Use it when there is concrete evidence that popup-based folder writing is too fragile under MV3 lifecycle constraints.
 
 ## Project Structure
 
@@ -149,8 +148,7 @@ Target structure:
 |   |   `-- offscreen.ts
 |   |-- export/
 |   |   |-- markdownWriter.ts
-|   |   |-- archiveBuilder.ts
-|   |   |-- zipWriter.ts
+|   |   |-- folderExportBuilder.ts
 |   |   `-- slugify.ts
 |   |-- assets/
 |   |   |-- assetResolver.ts
@@ -175,7 +173,7 @@ Target structure:
 `-- README.md
 ```
 
-Milestone 1 may omit `offscreen/`, `assets/assetFetcher.ts`, and parts of `zipWriter.ts` until the related feature is implemented. The boundaries should still be respected from the first scaffold.
+Milestone 1 may omit `offscreen/`, `assets/assetFetcher.ts`, and folder writer modules until the related feature is implemented. The boundaries should still be respected from the first scaffold.
 
 ## Dependency Direction
 
@@ -218,13 +216,13 @@ Popup: user clicks export
 -> Service worker: validate active tab
 -> Service worker: request extraction from content script
 -> Content script: extract DOM into ConversationDraft
--> Service worker or offscreen: build Markdown and archive
+-> Service worker or document-capable runtime: build Markdown and folder export artifact
 -> Validation: validate conversation, markdown, assets, warnings
--> Service worker: initiate ZIP download
+-> Popup or offscreen document: write files to the user-selected folder
 -> Popup: display result and warnings
 ```
 
-For Milestone 2, a Markdown-only download may be used as a stepping stone, but the architecture should still model the final ZIP pipeline.
+For Milestone 2 through Milestone 4, a Markdown-only download may be used as a stepping stone, but the architecture should still model the final folder export pipeline.
 
 ## Asset Pipeline
 
@@ -263,11 +261,11 @@ Expected categories:
 - low-confidence role detection
 - unsupported block fallback
 - asset fetch failed
-- archive generation failed
+- folder export generation failed
 - download failed
 - internal error
 
-Errors that make the archive unusable should block export. Partial asset failures may allow export with warnings.
+Errors that make the folder export unusable should block export. Partial asset failures may allow export with warnings.
 
 ## Manifest Boundary
 

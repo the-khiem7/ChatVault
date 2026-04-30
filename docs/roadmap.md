@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated: 2026-04-30
+Updated: 2026-05-01
 
 This is the primary resume file for the project. Keep it current enough that work can continue without reading prior chat history.
 
@@ -38,7 +38,7 @@ Click popup button
 
 ## Active Scope
 
-Build a Chrome Extension that exports the currently opened ChatGPT conversation into a local ZIP archive containing:
+Build a Chrome Extension that exports the currently opened ChatGPT conversation into a user-selected local folder containing:
 
 ```txt
 <slug>/conversation.md
@@ -53,6 +53,7 @@ The extension must:
 - Preserve message order and roles.
 - Preserve content as originally written as much as possible.
 - Download images/assets locally when browser policy allows.
+- Let the user choose the export folder before writing files.
 - Avoid external servers, telemetry, analytics, and cloud sync.
 - Follow the architecture in [architecture.md](architecture.md).
 
@@ -155,7 +156,7 @@ Deliverables:
 
 Acceptance:
 
-- Uploaded/generated images are included in ZIP where possible.
+- Uploaded/generated images are resolved as local export assets where possible.
 - `conversation.md` references local asset paths where possible.
 - Remote fallback links include warnings.
 - The extension does not expose arbitrary URL fetching.
@@ -166,24 +167,27 @@ Relevant docs:
 - [data-contracts.md](data-contracts.md)
 - [privacy-security.md](privacy-security.md)
 
-### Milestone 5: ZIP Export
+### Milestone 5: Folder Export
 
 Status: Not started
 
 Deliverables:
 
-- JSZip integration
-- archive artifact contract
-- archive manifest generation
-- single ZIP download through Chrome downloads API
-- offscreen document only if proven necessary
+- user-selected export folder through File System Access API
+- folder export artifact contract
+- export manifest generation
+- direct writing of `conversation.md`
+- direct writing of resolved assets under `assets/`
+- fallback or clear unsupported-browser error when File System Access API is unavailable
+- offscreen document only if popup lifecycle proves insufficient
 
 Acceptance:
 
-- User receives `chatgpt-export-<slug>.zip`.
-- ZIP contains `conversation.md`.
-- ZIP contains `assets/` when images exist.
-- ZIP paths match Markdown references.
+- User chooses an export folder before exporting.
+- Extension creates `<slug>/conversation.md` in the selected folder.
+- Extension creates `<slug>/assets/` when images exist.
+- Written asset paths match Markdown references.
+- User can open `conversation.md` locally and see resolved local images without unzipping.
 
 Relevant docs:
 
@@ -220,9 +224,9 @@ MVP is complete when:
 
 - User opens a ChatGPT conversation.
 - User clicks the extension button.
-- Extension exports a ZIP.
-- ZIP contains `conversation.md`.
-- ZIP contains `assets/` if images exist.
+- Extension exports a local folder tree.
+- Folder contains `conversation.md`.
+- Folder contains `assets/` if images exist.
 - Markdown contains all detected user and assistant messages in order.
 - Code blocks are preserved.
 - Images are referenced locally where possible.

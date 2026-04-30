@@ -14,6 +14,7 @@ Mitigation:
 - keep selectors isolated in `src/content/`
 - add fallback visible text extraction
 - report warnings when confidence is low
+- use the media extraction diagnostic script in [testing-validation.md](testing-validation.md) before changing image selectors
 
 ## Runtime Boundary Drift
 

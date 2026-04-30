@@ -16,17 +16,14 @@ This is the primary resume file for the project. Keep it current enough that wor
 
 ## Next Action
 
-Manually validate Milestone 4 image asset export in Chrome:
+Start Milestone 5 Folder Export using the File System Access API:
 
-- detect image nodes as asset candidates
-- asset naming
-- asset policy checks
-- data/blob URL conversion where possible
-- controlled fetch for allowed image blobs
-- stage saved asset references under `assets/`
-- replace Markdown image links with local asset paths when assets are resolved
-- warn when remote fallback is required
-- verify popup reports `Page images`, `Message images`, `Image candidates`, and `Assets saved` for a conversation containing visible images
+- let the user choose an export folder before exporting
+- build a folder export artifact with `conversation.md` and resolved asset bytes
+- write `<slug>/conversation.md`
+- write resolved assets under `<slug>/assets/`
+- validate written asset paths against Markdown references
+- show a clear unsupported-browser state when File System Access API is unavailable
 
 Milestone 1 acceptance check is implemented and ready for manual Chrome validation:
 
@@ -142,7 +139,7 @@ Relevant docs:
 
 ### Milestone 4: Image Asset Export
 
-Status: Implemented pending manual Chrome validation
+Status: Implemented and manually validated
 
 Deliverables:
 
@@ -161,6 +158,12 @@ Acceptance:
 - `conversation.md` references local asset paths where possible.
 - Remote fallback links include warnings.
 - The extension does not expose arbitrary URL fetching.
+
+Manual validation:
+
+- Chrome popup reported `Messages: 104`, `Page images: 80`, `Message images: 69`, `Image candidates: 69`, and `Assets saved: 69`.
+- Exported Markdown contained 69 image references and 69 `assets/...` local paths.
+- Physical asset file writing is intentionally deferred to Milestone 5 Folder Export.
 
 Relevant docs:
 
@@ -285,3 +288,4 @@ MVP is complete when:
 - Fixed image extraction for uploaded images rendered inside standalone `data-message-author-role` nodes outside article turns.
 - Preserved buttons that wrap `img[src]` so the extractor does not remove uploaded images before asset candidate detection.
 - Updated active Milestone 4 patch version to `0.4.3`.
+- Manually validated Milestone 4 Patch 3 in Chrome: popup reported 69 message images, 69 image candidates, and 69 saved assets; exported Markdown contained 69 local `assets/...` image references.

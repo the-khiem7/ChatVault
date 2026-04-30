@@ -115,6 +115,52 @@ Maintain test conversations covering:
 - attachment-like link
 - failed or blocked image URL
 
+## Media Extraction Diagnostic Script
+
+Use this browser DevTools console script when image/media extraction stops working after a ChatGPT DOM change. It helps distinguish between:
+
+- no `img` nodes in the rendered page
+- images rendered outside detected message containers
+- images wrapped in new parent structures
+- image sources or attributes changing shape
+
+Run it on the active ChatGPT conversation page:
+
+```js
+(() => {
+  const imgs = [...document.querySelectorAll("img")];
+  return {
+    imgCount: imgs.length,
+    samples: imgs.slice(0, 10).map((img) => {
+      const chain = [];
+      let node = img;
+      for (let i = 0; node && i < 8; i++, node = node.parentElement) {
+        chain.push({
+          tag: node.tagName,
+          testid: node.getAttribute?.("data-testid"),
+          role: node.getAttribute?.("data-message-author-role"),
+          aria: node.getAttribute?.("aria-label"),
+          cls: node.className?.toString().slice(0, 120)
+        });
+      }
+      return {
+        src: img.getAttribute("src")?.slice(0, 160),
+        alt: img.getAttribute("alt"),
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+        chain
+      };
+    })
+  };
+})();
+```
+
+Privacy note:
+
+- Do not paste full image URLs into public logs or issues. ChatGPT image URLs may include signed tokens.
+- The script truncates `src` values to reduce leakage, but review output before sharing.
+- Prefer using the parent `chain` shape to write extractor fixtures and regression tests.
+
 ## Output Validation Checklist
 
 Before considering MVP complete:

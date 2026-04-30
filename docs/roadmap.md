@@ -10,24 +10,22 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Documentation foundation exists in `docs/`.
 - Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
 - Root `README.md` introduces the project.
-- No extension source code has been scaffolded yet.
+- Milestone 1 extension skeleton has been scaffolded.
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
 
 ## Next Action
 
-Scaffold Milestone 1 using the runtime-first architecture:
+Start Milestone 2 using the runtime-first architecture:
 
-- `manifest.json`
-- `package.json`
-- Vite + TypeScript configuration
-- `src/popup/` for UI only
-- `src/background/serviceWorker.ts` for orchestration
-- `src/content/content.ts` for ChatGPT DOM extraction endpoint
-- `src/domain/` for shared domain types
-- `src/runtime/` for Chrome API/message adapters
-- basic popup -> service worker -> content script message flow
+- conversation title detection refinement
+- message container detection
+- user/assistant role detection
+- visible text extraction
+- `ConversationDraft` output
+- Markdown writer
+- interim Markdown download
 
-The first acceptance check is:
+Milestone 1 acceptance check is implemented and ready for manual Chrome validation:
 
 ```txt
 Click popup button
@@ -60,7 +58,7 @@ The extension must:
 
 ### Milestone 1: Extension Skeleton
 
-Status: Not started
+Status: Implemented; needs manual Chrome validation
 
 Deliverables:
 
@@ -239,3 +237,6 @@ MVP is complete when:
 - Reworked project architecture docs from initial recommendation into runtime-first extension architecture.
 - Updated related requirements, contracts, extraction, privacy, testing, risks, and decisions docs.
 - Removed the obsolete planning brief file and added root `README.md`.
+- Scaffolded Milestone 1 Chrome MV3 extension skeleton.
+- Added Vite, TypeScript, Vitest, unit tests, manifest, popup, service worker, content script, Chrome API adapter, URL support, and page summary extraction.
+- Verified with `npm test -- --run`, `npm run typecheck`, and `npm run build`.

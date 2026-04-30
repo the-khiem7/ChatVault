@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatGPT Markdown Exporter</title>
+    <script type="module" src="./popup.ts"></script>
+  </head>
+  <body>
+    <main class="popup-shell">
+      <header>
+        <h1>ChatGPT Export</h1>
+        <p id="statusText">Ready</p>
+      </header>
+
+      <button id="exportButton" type="button">Export Current Chat</button>
+
+      <section id="resultPanel" class="result-panel" aria-live="polite"></section>
+    </main>
+  </body>
+</html>

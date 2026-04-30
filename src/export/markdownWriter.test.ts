@@ -85,7 +85,7 @@ LIMIT 10;
 \`\`\``);
   });
 
-  it("converts SQL-like paragraph lines into fenced SQL blocks", () => {
+  it("converts SQL-like paragraph lines into fenced SQL blocks without rewriting SQL text", () => {
     const draft: ConversationDraft = {
       title: "SQL Inline",
       sourceUrl: "https://chatgpt.com/c/sql-inline",
@@ -113,16 +113,13 @@ LIMIT 10;
     expect(writeMarkdown(draft)).toContain(`Query thử:
 
 \`\`\`sql
-SELECT *
-FROM taxi_raw.table_2025
-WHERE month = '01'
-LIMIT 20;
+SELECT *FROM taxi_raw.table_2025WHERE month = '01'LIMIT 20;
 \`\`\`
 
 Sau đó xem rows.`);
   });
 
-  it("detects and normalizes SQL inside unlabeled code blocks", () => {
+  it("detects SQL inside unlabeled code blocks without rewriting SQL identifiers", () => {
     const draft: ConversationDraft = {
       title: "SQL Code",
       sourceUrl: "https://chatgpt.com/c/sql-code",
@@ -140,7 +137,7 @@ Sau đó xem rows.`);
             {
               id: "message-1-block-1",
               kind: "code",
-              text: "DROP SCHEMA taxi_processed CASCADE;CREATE EXTERNAL SCHEMA taxi_processedFROM DATA CATALOGDATABASE 'redshift_database'IAM_ROLE defaultREGION 'us-east-2';"
+              text: "CREATE EXTERNAL TABLE taxi_data_schema.yellow_taxi_trips (...)STORED AS PARQUETLOCATION 's3://processed-yellow-taxi-trip-data/year=2025/month=01/';"
             }
           ]
         }
@@ -148,12 +145,8 @@ Sau đó xem rows.`);
     };
 
     expect(writeMarkdown(draft)).toContain(`\`\`\`sql
-DROP SCHEMA taxi_processed CASCADE;
-CREATE EXTERNAL SCHEMA taxi_processed
-FROM DATA CATALOG
-DATABASE 'redshift_database'
-IAM_ROLE default
-REGION 'us-east-2';
+CREATE EXTERNAL TABLE taxi_data_schema.yellow_taxi_trips (...)STORED AS PARQUETLOCATION 's3://processed-yellow-taxi-trip-data/year=2025/month=01/';
 \`\`\``);
+    expect(writeMarkdown(draft)).not.toContain("LOCATI\nON");
   });
 });

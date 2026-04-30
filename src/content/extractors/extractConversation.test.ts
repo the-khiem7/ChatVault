@@ -96,6 +96,36 @@ describe("extractConversation", () => {
     ]);
   });
 
+  it("merges adjacent same-role chunks into one conversation message", () => {
+    const documentRef = buildDocument(`
+      <html>
+        <head><title>Split Assistant - ChatGPT</title></head>
+        <body>
+          <main>
+            <article data-testid="conversation-turn-1">
+              <div data-message-author-role="user">Question</div>
+            </article>
+            <article data-testid="conversation-turn-2">
+              <div data-message-author-role="assistant">First assistant chunk</div>
+            </article>
+            <article data-testid="conversation-turn-3">
+              <div data-message-author-role="assistant">Second assistant chunk</div>
+            </article>
+            <article data-testid="conversation-turn-4">
+              <div data-message-author-role="user">Follow-up</div>
+            </article>
+          </main>
+        </body>
+      </html>
+    `);
+
+    const draft = extractConversation(documentRef, new URL("https://chatgpt.com/c/split"));
+
+    expect(draft.messages.map((message) => message.role)).toEqual(["user", "assistant", "user"]);
+    expect(draft.messages[1]?.blocks[0]?.text).toBe("First assistant chunk\n\nSecond assistant chunk");
+    expect(draft.messages.map((message) => message.index)).toEqual([0, 1, 2]);
+  });
+
   it("emits a warning when no message containers are found", () => {
     const draft = extractConversation(buildDocument("<main>No chat here</main>"), new URL("https://chatgpt.com/"));
 

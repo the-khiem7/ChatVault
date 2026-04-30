@@ -20,7 +20,8 @@ function extractCurrentPageSummary(): PageSummary {
 
 function extractCurrentConversation(): ConversationDraft {
   const messageElements = findMessageElements();
-  const messages = messageElements
+  const messages = mergeAdjacentSameRoleMessages(
+    messageElements
     .map((element, index) => {
       const id = `message-${index + 1}`;
       const role = detectMessageRole(element, index);
@@ -35,7 +36,8 @@ function extractCurrentConversation(): ConversationDraft {
         blocks: text ? [{ id: `${id}-block-1`, kind: "paragraph" as const, text }] : []
       };
     })
-    .filter((message) => message.blocks.length > 0);
+      .filter((message) => message.blocks.length > 0)
+  );
   const warnings: ExportWarning[] =
     messages.length === 0
       ? [
@@ -56,6 +58,33 @@ function extractCurrentConversation(): ConversationDraft {
     assetCandidates: [],
     warnings
   };
+}
+
+function mergeAdjacentSameRoleMessages(messages: ConversationDraft["messages"]): ConversationDraft["messages"] {
+  const merged: ConversationDraft["messages"] = [];
+
+  for (const message of messages) {
+    const previous = merged[merged.length - 1];
+
+    if (previous?.role === message.role) {
+      previous.blocks = [
+        {
+          id: `${previous.id}-block-1`,
+          kind: "paragraph",
+          text: [previous.blocks.map((block) => block.text).join("\n\n"), message.blocks.map((block) => block.text).join("\n\n")]
+            .filter(Boolean)
+            .join("\n\n")
+        }
+      ];
+      previous.confidence = previous.confidence === "high" && message.confidence === "high" ? "high" : "low";
+      previous.warnings = [...previous.warnings, ...message.warnings];
+      continue;
+    }
+
+    merged.push({ ...message, index: merged.length });
+  }
+
+  return merged;
 }
 
 function findMessageElements(): Element[] {

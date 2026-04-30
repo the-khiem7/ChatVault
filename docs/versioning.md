@@ -25,10 +25,11 @@ Milestone 1 first patch:     0.1.1
 Milestone 2 start:           0.2.0
 Milestone 2 second patch:    0.2.2
 Milestone 2 third patch:     0.2.3
+Milestone 2 fourth patch:    0.2.4
 ```
 
 Current version:
 
 ```txt
-0.2.3
+0.2.4
 ```

@@ -20,9 +20,11 @@ const MESSAGE_SELECTOR = [
 ].join(",");
 
 export function extractConversation(documentRef: Document, locationRef: Location | URL): ConversationDraft {
-  const messages = findMessageCandidates(documentRef)
+  const messages = mergeAdjacentSameRoleMessages(
+    findMessageCandidates(documentRef)
     .map((candidate, index) => toMessageDraft(candidate, index))
-    .filter((message) => message.blocks.length > 0);
+      .filter((message) => message.blocks.length > 0)
+  );
   const warnings: ExportWarning[] = [];
 
   if (messages.length === 0) {
@@ -42,6 +44,33 @@ export function extractConversation(documentRef: Document, locationRef: Location
     assetCandidates: [],
     warnings
   };
+}
+
+function mergeAdjacentSameRoleMessages(messages: ChatMessageDraft[]): ChatMessageDraft[] {
+  const merged: ChatMessageDraft[] = [];
+
+  for (const message of messages) {
+    const previous = merged[merged.length - 1];
+
+    if (previous?.role === message.role) {
+      previous.blocks = [
+        {
+          id: `${previous.id}-block-1`,
+          kind: "paragraph",
+          text: [previous.blocks.map((block) => block.text).join("\n\n"), message.blocks.map((block) => block.text).join("\n\n")]
+            .filter(Boolean)
+            .join("\n\n")
+        }
+      ];
+      previous.confidence = previous.confidence === "high" && message.confidence === "high" ? "high" : "low";
+      previous.warnings = [...previous.warnings, ...message.warnings];
+      continue;
+    }
+
+    merged.push({ ...message, index: merged.length });
+  }
+
+  return merged;
 }
 
 function findMessageCandidates(documentRef: Document): MessageCandidate[] {

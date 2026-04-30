@@ -11,7 +11,7 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.2.3` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.2.4` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
 
 ## Next Action
@@ -254,3 +254,5 @@ MVP is complete when:
 - Fixed ChatGPT message extraction to use article turns as message boundaries and read user/assistant roles from nested role nodes.
 - Updated Markdown contract so User/Assistant role headings are H1 and conversation/content headings are H2 or lower.
 - Updated active Milestone 2 patch version to `0.2.3`.
+- Implemented Milestone 2 Patch 4 to merge adjacent same-role chunks that ChatGPT exposes as separate article nodes.
+- Updated active Milestone 2 patch version to `0.2.4`.

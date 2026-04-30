@@ -19,23 +19,18 @@ function extractCurrentPageSummary(): PageSummary {
 }
 
 function extractCurrentConversation(): ConversationDraft {
-  const messageElements = Array.from(
-    document.querySelectorAll(
-      "article[data-testid^='conversation-turn'], article[data-message-author-role], [data-message-author-role]"
-    )
-  );
+  const messageElements = findMessageElements();
   const messages = messageElements
     .map((element, index) => {
       const id = `message-${index + 1}`;
-      const text = ((element as HTMLElement).innerText ?? element.textContent ?? "")
-        .trim()
-        .replace(/\n{3,}/g, "\n\n");
+      const role = detectMessageRole(element, index);
+      const text = getVisibleText(element);
 
       return {
         id,
         index,
-        role: detectMessageRole(element, index),
-        confidence: (element.getAttribute("data-message-author-role") ? "high" : "low") as DetectionConfidence,
+        role: role.role,
+        confidence: role.confidence,
         warnings: [],
         blocks: text ? [{ id: `${id}-block-1`, kind: "paragraph" as const, text }] : []
       };
@@ -63,12 +58,53 @@ function extractCurrentConversation(): ConversationDraft {
   };
 }
 
-function detectMessageRole(element: Element, index: number): MessageRole {
-  const explicitRole = element.getAttribute("data-message-author-role")?.toLowerCase();
-  if (explicitRole === "user" || explicitRole === "assistant" || explicitRole === "system") {
-    return explicitRole;
+function findMessageElements(): Element[] {
+  const articleElements = Array.from(
+    document.querySelectorAll("article[data-testid^='conversation-turn'], article[data-message-author-role]")
+  );
+
+  if (articleElements.length > 0) {
+    return articleElements;
   }
-  return index % 2 === 0 ? "user" : "assistant";
+
+  return uniqueRootElements(document.querySelectorAll("[data-message-author-role]"));
+}
+
+function uniqueRootElements(elements: NodeListOf<Element>): Element[] {
+  const unique: Element[] = [];
+
+  for (const element of Array.from(elements)) {
+    if (!unique.some((candidate) => candidate.contains(element))) {
+      unique.push(element);
+    }
+  }
+
+  return unique;
+}
+
+function detectMessageRole(element: Element, index: number): { role: MessageRole; confidence: DetectionConfidence } {
+  const roleElement = element.matches("[data-message-author-role]")
+    ? element
+    : element.querySelector("[data-message-author-role]");
+  const explicitRole = roleElement?.getAttribute("data-message-author-role")?.toLowerCase();
+
+  if (explicitRole === "user" || explicitRole === "assistant" || explicitRole === "system") {
+    return { role: explicitRole, confidence: "high" };
+  }
+
+  return { role: index % 2 === 0 ? "user" : "assistant", confidence: "low" };
+}
+
+function getVisibleText(element: Element): string {
+  const clone = element.cloneNode(true) as Element;
+  for (const disposable of Array.from(
+    clone.querySelectorAll("button, svg, [aria-hidden='true'], [data-testid*='copy']")
+  )) {
+    disposable.remove();
+  }
+
+  const htmlElement = clone as HTMLElement;
+  return (htmlElement.innerText ?? clone.textContent ?? "").trim().replace(/\n{3,}/g, "\n\n");
 }
 
 if (!window[LISTENER_FLAG]) {

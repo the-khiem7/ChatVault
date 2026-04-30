@@ -224,13 +224,13 @@ sourceUrl: "{current url}"
 exportedAt: "{ISO datetime}"
 ---
 
-# {conversation title}
+## {conversation title}
 
-## User
+# User
 
 ...
 
-## Assistant
+# Assistant
 
 ...
 
@@ -242,7 +242,8 @@ Rules:
 - Do not add commentary.
 - Do not summarize.
 - Do not clean up the user's original wording.
-- Use stable role headings.
+- Use stable role headings: `# User`, `# Assistant`, `# System`, or `# Unknown`.
+- Keep non-role headings at H2 or lower so user/assistant turns remain the top-level outline.
 - Preserve code fences.
 - Prefer local image paths.
 
@@ -274,4 +275,3 @@ Before download, validate:
 - warnings are included in the final response
 
 Validation failures should block export when output would be unusable. Partial asset failures may allow export with warnings.
-

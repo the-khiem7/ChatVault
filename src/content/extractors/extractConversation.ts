@@ -45,7 +45,11 @@ export function extractConversation(documentRef: Document, locationRef: Location
 }
 
 function findMessageCandidates(documentRef: Document): MessageCandidate[] {
-  const elements = Array.from(documentRef.querySelectorAll(MESSAGE_SELECTOR));
+  const articleElements = Array.from(
+    documentRef.querySelectorAll("article[data-testid^='conversation-turn'], article[data-message-author-role]")
+  );
+  const elements =
+    articleElements.length > 0 ? articleElements : uniqueRootElements(documentRef.querySelectorAll(MESSAGE_SELECTOR));
 
   return elements.map((element, index) => {
     const role = detectRole(element, index);
@@ -57,8 +61,23 @@ function findMessageCandidates(documentRef: Document): MessageCandidate[] {
   });
 }
 
+function uniqueRootElements(elements: NodeListOf<Element>): Element[] {
+  const unique: Element[] = [];
+
+  for (const element of Array.from(elements)) {
+    if (!unique.some((candidate) => candidate.contains(element))) {
+      unique.push(element);
+    }
+  }
+
+  return unique;
+}
+
 function detectRole(element: Element, index: number): { role: MessageRole; confidence: DetectionConfidence } {
-  const explicitRole = element.getAttribute("data-message-author-role")?.toLowerCase();
+  const roleElement = element.matches("[data-message-author-role]")
+    ? element
+    : element.querySelector("[data-message-author-role]");
+  const explicitRole = roleElement?.getAttribute("data-message-author-role")?.toLowerCase();
 
   if (explicitRole === "user" || explicitRole === "assistant" || explicitRole === "system") {
     return { role: explicitRole, confidence: "high" };
@@ -93,6 +112,13 @@ function toMessageDraft(candidate: MessageCandidate, index: number): ChatMessage
 }
 
 function getVisibleText(element: Element): string {
-  const htmlElement = element as HTMLElement;
-  return (htmlElement.innerText ?? element.textContent ?? "").trim().replace(/\n{3,}/g, "\n\n");
+  const clone = element.cloneNode(true) as Element;
+  for (const disposable of Array.from(
+    clone.querySelectorAll("button, svg, [aria-hidden='true'], [data-testid*='copy']")
+  )) {
+    disposable.remove();
+  }
+
+  const htmlElement = clone as HTMLElement;
+  return (htmlElement.innerText ?? clone.textContent ?? "").trim().replace(/\n{3,}/g, "\n\n");
 }

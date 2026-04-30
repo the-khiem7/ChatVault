@@ -35,7 +35,7 @@ describe("exportCurrentChat", () => {
     expect(chromeApi.sendMessageToTab).toHaveBeenCalledWith(5, { type: "EXTRACT_CONVERSATION" });
     expect(chromeApi.downloadMarkdown).toHaveBeenCalledWith(
       "chatgpt-export-data-analysis-chatgpt.md",
-      expect.stringContaining("## User\n\nHello")
+      expect.stringContaining("# User\n\nHello")
     );
     expect(result).toEqual({
       ok: true,

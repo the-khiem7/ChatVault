@@ -9,15 +9,15 @@ export function writeMarkdown(draft: ConversationDraft): string {
     `exportedAt: "${escapeYamlString(draft.extractedAt)}"`,
     "---",
     "",
-    `# ${draft.title}`,
+    `## ${draft.title}`,
     ""
   ];
 
   for (const message of draft.messages) {
-    lines.push(`## ${formatRole(message.role)}`, "");
+    lines.push(`# ${formatRole(message.role)}`, "");
 
     for (const block of message.blocks) {
-      lines.push(block.text, "");
+      lines.push(normalizeContentHeadings(block.text), "");
     }
   }
 
@@ -39,4 +39,8 @@ function formatRole(role: MessageRole): string {
 
 function escapeYamlString(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+function normalizeContentHeadings(value: string): string {
+  return value.replace(/^#{1,6}\s+(.+)$/gm, "## $1");
 }

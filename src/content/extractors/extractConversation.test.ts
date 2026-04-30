@@ -48,6 +48,54 @@ describe("extractConversation", () => {
     ]);
   });
 
+  it("uses article turns as message boundaries and reads roles from nested ChatGPT role nodes", () => {
+    const documentRef = buildDocument(`
+      <html>
+        <head><title>Nested Roles - ChatGPT</title></head>
+        <body>
+          <main>
+            <article data-testid="conversation-turn-1">
+              <div data-message-author-role="user">
+                <p>User asks first</p>
+                <button>Copy</button>
+              </div>
+            </article>
+            <article data-testid="conversation-turn-2">
+              <div data-message-author-role="assistant">
+                <p>Assistant answers first</p>
+              </div>
+            </article>
+            <article data-testid="conversation-turn-3">
+              <div data-message-author-role="user">
+                <p>User asks second</p>
+              </div>
+            </article>
+            <article data-testid="conversation-turn-4">
+              <div data-message-author-role="assistant">
+                <p>Assistant answers second</p>
+              </div>
+            </article>
+          </main>
+        </body>
+      </html>
+    `);
+
+    const draft = extractConversation(documentRef, new URL("https://chatgpt.com/c/nested"));
+
+    expect(draft.messages.map((message) => message.role)).toEqual([
+      "user",
+      "assistant",
+      "user",
+      "assistant"
+    ]);
+    expect(draft.messages.map((message) => message.blocks[0]?.text)).toEqual([
+      "User asks first",
+      "Assistant answers first",
+      "User asks second",
+      "Assistant answers second"
+    ]);
+  });
+
   it("emits a warning when no message containers are found", () => {
     const draft = extractConversation(buildDocument("<main>No chat here</main>"), new URL("https://chatgpt.com/"));
 

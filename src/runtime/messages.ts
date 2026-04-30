@@ -23,6 +23,7 @@ export type MarkdownExportResult = {
   filename: string;
   title: string;
   messageCount: number;
+  assetCandidateCount: number;
   assetCount: number;
 };
 

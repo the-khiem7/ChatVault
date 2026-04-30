@@ -11,7 +11,7 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.4.0` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.4.1` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
 
 ## Next Action
@@ -26,6 +26,7 @@ Manually validate Milestone 4 image asset export in Chrome:
 - stage saved asset references under `assets/`
 - replace Markdown image links with local asset paths when assets are resolved
 - warn when remote fallback is required
+- verify popup reports `Image candidates` and `Assets saved` for a conversation containing visible images
 
 Milestone 1 acceptance check is implemented and ready for manual Chrome validation:
 
@@ -276,3 +277,5 @@ MVP is complete when:
 - Added asset naming and asset resolver policy for data URLs, blob/HTTPS candidates, controlled fetch, local `assets/` paths, and remote fallback warnings.
 - Updated Markdown writing to emit local image paths when resolved and remote links when fallback is required.
 - Wired service-worker export orchestration to resolve assets before Markdown generation and report saved asset counts/warnings in the popup.
+- Implemented Milestone 4 Patch 1 to report image candidate count separately from saved asset count in the popup, so manual validation can distinguish DOM detection gaps from asset fetch failures.
+- Updated active Milestone 4 patch version to `0.4.1`.

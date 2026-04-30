@@ -43,6 +43,7 @@ describe("exportCurrentChat", () => {
         filename: "chatgpt-export-data-analysis-chatgpt.md",
         title: "Data Analysis - ChatGPT",
         messageCount: 1,
+        assetCandidateCount: 0,
         assetCount: 0
       },
       warnings: []
@@ -104,6 +105,7 @@ describe("exportCurrentChat", () => {
     expect(result).toMatchObject({
       ok: true,
       data: {
+        assetCandidateCount: 1,
         assetCount: 1
       },
       warnings: []

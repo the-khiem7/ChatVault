@@ -57,6 +57,7 @@ export async function exportCurrentChat(
         filename,
         title: draft.title,
         messageCount: draft.messages.length,
+        assetCandidateCount: draft.assetCandidates.length,
         assetCount: assetResolution.assets.filter((asset) => asset.status === "saved").length
       },
       warnings: [...(draftResponse.warnings ?? []), ...draft.warnings, ...assetResolution.warnings]

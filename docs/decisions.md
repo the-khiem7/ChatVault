@@ -157,3 +157,22 @@ Consequences:
 - pure modules remain testable
 - runtime API usage is easier to audit
 - integration tests can mock extension APIs more easily
+
+## ADR-009: Use Milestone-Based Pre-1.0 Versioning
+
+Status: Accepted
+
+Context:
+
+The project is progressing through explicit implementation milestones. Version numbers should make the active milestone and patch count visible in both the extension manifest and package metadata.
+
+Decision:
+
+Use `0.<milestone>.<patch>` versions until the project reaches a stable 1.0 release. Every code change increments the version. When moving to a new milestone, reset patch to `0` for that milestone. Keep `package.json`, `package-lock.json`, and `manifest.json` synchronized.
+
+Consequences:
+
+- reviewers can infer active milestone from the version
+- Chrome extension builds expose the same version as package metadata
+- documentation and release tracking stay aligned with milestone progress
+- every future code patch must include a version bump

@@ -51,6 +51,7 @@ Key architectural decision:
 - [testing-validation.md](testing-validation.md): architecture boundary checks, test scenarios, manual QA, and MVP definition of done.
 - [risks.md](risks.md): known risks, mitigations, and open questions.
 - [decisions.md](decisions.md): architectural decision log.
+- [versioning.md](versioning.md): milestone-based versioning rules and current version.
 
 ## Resume Protocol
 
@@ -62,3 +63,4 @@ When resuming this project:
 4. Read only the relevant detail docs listed under the active milestone.
 5. Update [roadmap.md](roadmap.md) after every meaningful implementation step.
 6. Record irreversible or important technical choices in [decisions.md](decisions.md).
+7. For every code change, update version values according to [versioning.md](versioning.md).

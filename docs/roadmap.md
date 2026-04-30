@@ -11,6 +11,7 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
+- Active version is `0.2.2` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
 
 ## Next Action
@@ -58,7 +59,7 @@ The extension must:
 
 ### Milestone 1: Extension Skeleton
 
-Status: Implemented; needs manual Chrome validation
+Status: Implemented and manually validated
 
 Deliverables:
 
@@ -87,7 +88,7 @@ Relevant docs:
 
 ### Milestone 2: Basic Text Export
 
-Status: Not started
+Status: Implemented; needs manual Chrome validation
 
 Deliverables:
 
@@ -243,3 +244,9 @@ MVP is complete when:
 - Fixed content script bundle validation after manual Chrome test showed `CONTENT_SCRIPT_UNAVAILABLE`.
 - Added `npm run verify:extension` to ensure manifest-declared content script output has no top-level `import` or `export`.
 - Added service worker fallback injection for already-open supported tabs where the content script listener is not present yet.
+- Manually validated Milestone 1 popup -> service worker -> content script page title and URL flow in Chrome.
+- Implemented Milestone 2 basic text export with `ConversationDraft` extraction, Markdown writer, slugged `.md` filename, service-worker download orchestration, and popup success/warning display.
+- Added unit coverage for DOM extraction, Markdown writing, and export orchestration.
+- Verified Milestone 2 with `npm test -- --run`, `npm run typecheck`, `npm run build`, and `npm run verify:extension`.
+- Added milestone-based versioning rule: every code change updates version as `0.<milestone>.<patch>`.
+- Updated active Milestone 2 patch version to `0.2.2`.

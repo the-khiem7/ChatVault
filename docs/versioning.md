@@ -28,10 +28,11 @@ Milestone 2 third patch:     0.2.3
 Milestone 2 fourth patch:    0.2.4
 Milestone 3 first patch:     0.3.1
 Milestone 3 second patch:    0.3.2
+Milestone 3 third patch:     0.3.3
 ```
 
 Current version:
 
 ```txt
-0.3.2
+0.3.3
 ```

@@ -50,8 +50,10 @@ function normalizeContentHeadings(value: string): string {
 }
 
 function formatCodeBlock(text: string, language: string | undefined): string {
-  const fence = text.includes("```") ? "````" : "```";
-  return `${fence}${language ?? ""}\n${text}\n${fence}`;
+  const effectiveLanguage = language ?? (isSqlLikeLine(text.trim()) ? "sql" : undefined);
+  const formattedText = effectiveLanguage === "sql" ? normalizeSqlLine(text) : text;
+  const fence = formattedText.includes("```") ? "````" : "```";
+  return `${fence}${effectiveLanguage ?? ""}\n${formattedText}\n${fence}`;
 }
 
 function formatParagraphBlock(text: string): string {
@@ -76,7 +78,9 @@ function isSqlLikeLine(value: string): boolean {
 function normalizeSqlLine(value: string): string {
   return value
     .replace(/\s+/g, " ")
-    .replace(/\s*(FROM|WHERE|GROUP BY|ORDER BY|HAVING|LIMIT|JOIN|LEFT JOIN|RIGHT JOIN|INNER JOIN|OUTER JOIN|ON|AND|OR|IAM_ROLE|REGION|DATABASE)\b/gi, "\n$1")
+    .replace(/;\s*(?=(SELECT|CREATE|DROP|ALTER|WITH|INSERT|UPDATE|DELETE)\b)/gi, ";\n")
+    .replace(/CATALOGDATABASE/gi, "CATALOG\nDATABASE")
+    .replace(/\s*(FROM DATA CATALOG|GROUP BY|ORDER BY|LEFT JOIN|RIGHT JOIN|INNER JOIN|OUTER JOIN|WHERE|HAVING|LIMIT|JOIN|FROM|ON|AND|OR|IAM_ROLE|REGION)\b/gi, "\n$1")
     .replace(/\n(AND|OR)\b/gi, "\n  $1")
     .replace(/^\s+|\s+$/g, "")
     .replace(/\n\s+/g, "\n");

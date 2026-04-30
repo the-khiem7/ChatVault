@@ -240,3 +240,6 @@ MVP is complete when:
 - Scaffolded Milestone 1 Chrome MV3 extension skeleton.
 - Added Vite, TypeScript, Vitest, unit tests, manifest, popup, service worker, content script, Chrome API adapter, URL support, and page summary extraction.
 - Verified with `npm test -- --run`, `npm run typecheck`, and `npm run build`.
+- Fixed content script bundle validation after manual Chrome test showed `CONTENT_SCRIPT_UNAVAILABLE`.
+- Added `npm run verify:extension` to ensure manifest-declared content script output has no top-level `import` or `export`.
+- Added service worker fallback injection for already-open supported tabs where the content script listener is not present yet.

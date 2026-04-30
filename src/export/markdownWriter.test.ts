@@ -84,4 +84,41 @@ FROM taxi_raw.table_2025
 LIMIT 10;
 \`\`\``);
   });
+
+  it("converts SQL-like paragraph lines into fenced SQL blocks", () => {
+    const draft: ConversationDraft = {
+      title: "SQL Inline",
+      sourceUrl: "https://chatgpt.com/c/sql-inline",
+      extractedAt: "2026-04-30T13:00:00.000Z",
+      assetCandidates: [],
+      warnings: [],
+      messages: [
+        {
+          id: "message-1",
+          index: 0,
+          role: "assistant",
+          confidence: "high",
+          warnings: [],
+          blocks: [
+            {
+              id: "message-1-block-1",
+              kind: "paragraph",
+              text: "Query thử:\n\nSELECT *FROM taxi_raw.table_2025WHERE month = '01'LIMIT 20;\n\nSau đó xem rows."
+            }
+          ]
+        }
+      ]
+    };
+
+    expect(writeMarkdown(draft)).toContain(`Query thử:
+
+\`\`\`sql
+SELECT *
+FROM taxi_raw.table_2025
+WHERE month = '01'
+LIMIT 20;
+\`\`\`
+
+Sau đó xem rows.`);
+  });
 });

@@ -11,7 +11,7 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.3.1` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.3.2` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
 
 ## Next Action
@@ -258,3 +258,5 @@ MVP is complete when:
 - Closed Milestone 2 after manual validation showed balanced User/Assistant turns and no consecutive same-role split.
 - Started Milestone 3 Patch 1 with code block extraction and fenced Markdown writing.
 - Updated active Milestone 3 patch version to `0.3.1`.
+- Implemented Milestone 3 Patch 2 with SQL-like paragraph fencing and keyword line break normalization.
+- Updated active Milestone 3 patch version to `0.3.2`.

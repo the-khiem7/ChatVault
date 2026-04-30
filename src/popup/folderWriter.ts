@@ -2,7 +2,7 @@ import type { FolderExportArtifact, FolderExportFile } from "../export/folderExp
 
 type WritableFileHandle = {
   createWritable(): Promise<{
-    write(content: string | ArrayBuffer): Promise<void>;
+    write(content: string | Blob): Promise<void>;
     close(): Promise<void>;
   }>;
 };
@@ -37,6 +37,10 @@ async function writeExportFile(rootFolder: WritableDirectoryHandle, file: Folder
 
   const fileHandle = await directory.getFileHandle(fileName, { create: true });
   const writable = await fileHandle.createWritable();
-  await writable.write(file.content);
+  await writable.write(normalizeFileContent(file.content));
   await writable.close();
+}
+
+function normalizeFileContent(content: FolderExportFile["content"]): string | Blob {
+  return typeof content === "string" ? content : new Blob([new Uint8Array(content)]);
 }

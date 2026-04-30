@@ -128,7 +128,7 @@ describe("exportCurrentChat", () => {
           {
             relativePath: "assets/001.png",
             mimeType: "image/png",
-            content: expect.any(ArrayBuffer)
+            content: [104, 101, 108, 108, 111]
           }
         ]
       },

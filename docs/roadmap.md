@@ -11,7 +11,7 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.5.0` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.5.1` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
 
 ## Next Action
@@ -176,7 +176,7 @@ Relevant docs:
 
 ### Milestone 5: Folder Export
 
-Status: Implemented pending manual Chrome validation
+Status: Implemented and manually validated
 
 Deliverables:
 
@@ -201,6 +201,14 @@ Acceptance:
 - Written asset paths match Markdown references.
 - User can open `conversation.md` locally and see resolved local images without unzipping.
 - If folder permission expires, the popup asks the user to choose the folder again.
+
+Manual validation:
+
+- User selected `D:\SourceCode\PROJECTS\LocalGPT\output`.
+- Popup reported `Messages: 104`, `Page images: 80`, `Message images: 69`, `Image candidates: 69`, and `Assets saved: 69`.
+- Export created `output/manhattan-dataways-redshift-spectrum-query-setup/conversation.md`.
+- Export created `output/manhattan-dataways-redshift-spectrum-query-setup/assets/` with 69 files.
+- `conversation.md` contains 69 local `assets/...` image references.
 
 Relevant docs:
 
@@ -303,3 +311,7 @@ MVP is complete when:
 - Replaced Markdown-only download handoff with popup-based File System Access API folder writing.
 - Added `Choose Folder` popup control, automatic folder picker on export when needed, session-only folder handle, and folder export status messages.
 - Added unit coverage for folder export artifact building, nested folder writing, and runtime folder export result.
+- Implemented Milestone 5 Patch 1 to serialize asset bytes as JSON-safe byte arrays across Chrome runtime messaging, then normalize them back to `Uint8Array` before File System Access writes.
+- Updated popup error reporting to include the original folder export error message when available.
+- Updated active Milestone 5 patch version to `0.5.1`.
+- Manually validated Milestone 5 Patch 1 in Chrome: folder export wrote `conversation.md` and 69 asset files to the selected `output/` directory, with Markdown references matching the written assets.

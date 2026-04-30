@@ -7,7 +7,7 @@ import { slugify } from "./slugify";
 export type FolderExportFile = {
   relativePath: string;
   mimeType: string;
-  content: string | ArrayBuffer;
+  content: string | number[];
 };
 
 export type FolderExportManifest = {
@@ -39,7 +39,7 @@ export function buildFolderExportArtifact(
   const assetFiles = input.assetFiles.map((file) => ({
     relativePath: file.relativePath,
     mimeType: file.mimeType,
-    content: file.bytes
+    content: Array.from(new Uint8Array(file.bytes))
   }));
 
   return {

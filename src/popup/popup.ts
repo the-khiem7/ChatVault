@@ -1,6 +1,7 @@
 import "./popup.css";
 import type { FolderExportResult, RuntimeRequest, RuntimeResponse } from "../runtime/messages";
 import { writeFolderExportArtifact } from "./folderWriter";
+import { formatExportError } from "./exportError";
 
 const chooseFolderButton = document.querySelector<HTMLButtonElement>("#chooseFolderButton");
 const exportButton = document.querySelector<HTMLButtonElement>("#exportButton");
@@ -116,9 +117,9 @@ exportButton?.addEventListener("click", async () => {
       `Exported to ${response.data.rootFolder}/\nMessages: ${response.data.messageCount}\nPage images: ${response.data.documentImageCount}\nMessage images: ${response.data.messageImageCount}\nImage candidates: ${response.data.assetCandidateCount}\nAssets saved: ${response.data.assetCount}${warningText}`,
       "success"
     );
-  } catch {
+  } catch (error) {
     setStatus("Failed");
-    setResult("Folder export failed. Choose the folder again and retry.", "error");
+    setResult(formatExportError(error), "error");
   } finally {
     setBusy(false);
   }

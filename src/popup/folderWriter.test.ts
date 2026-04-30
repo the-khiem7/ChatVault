@@ -10,7 +10,7 @@ describe("writeFolderExportArtifact", () => {
       rootFolder: "my-chat",
       files: [
         { relativePath: "conversation.md", mimeType: "text/markdown", content: "# User\n\nHello" },
-        { relativePath: "assets/001.png", mimeType: "image/png", content: new Uint8Array([1, 2]).buffer }
+        { relativePath: "assets/001.png", mimeType: "image/png", content: [1, 2] }
       ],
       manifest: {
         rootFolder: "my-chat",
@@ -22,10 +22,10 @@ describe("writeFolderExportArtifact", () => {
 
     await writeFolderExportArtifact(selectedFolder, artifact);
 
-    expect(writes).toEqual([
-      { path: "selected/my-chat/conversation.md", content: "# User\n\nHello" },
-      { path: "selected/my-chat/assets/001.png", content: artifact.files[1]?.content }
-    ]);
+    expect(writes[0]).toEqual({ path: "selected/my-chat/conversation.md", content: "# User\n\nHello" });
+    expect(writes[1]?.path).toBe("selected/my-chat/assets/001.png");
+    expect(writes[1]?.content).toBeInstanceOf(Blob);
+    expect((writes[1]?.content as Blob).size).toBe(2);
   });
 });
 

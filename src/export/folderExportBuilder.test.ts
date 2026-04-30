@@ -60,7 +60,7 @@ describe("buildFolderExportArtifact", () => {
       {
         relativePath: "assets/001.png",
         mimeType: "image/png",
-        content: bytes
+        content: [1, 2, 3]
       }
     ]);
     expect(artifact.manifest).toEqual({

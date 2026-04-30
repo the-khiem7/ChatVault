@@ -1,4 +1,5 @@
 import type {
+  AssetCandidate,
   ChatMessageDraft,
   ConversationDraft,
   ContentBlockDraft,
@@ -6,13 +7,14 @@ import type {
   MessageRole
 } from "../../domain/conversation";
 import type { ExportWarning } from "../../domain/warning";
-import { FALLBACK_CONVERSATION_TITLE } from "../../shared/constants";
 
 type MessageCandidate = {
   element: Element;
   role: MessageRole;
   confidence: DetectionConfidence;
 };
+
+const FALLBACK_CONVERSATION_TITLE = "Untitled ChatGPT Conversation";
 
 const MESSAGE_SELECTOR = [
   "article[data-testid^='conversation-turn']",
@@ -21,9 +23,10 @@ const MESSAGE_SELECTOR = [
 ].join(",");
 
 export function extractConversation(documentRef: Document, locationRef: Location | URL): ConversationDraft {
+  const assetCandidates: AssetCandidate[] = [];
   const messages = mergeAdjacentSameRoleMessages(
     findMessageCandidates(documentRef)
-    .map((candidate, index) => toMessageDraft(candidate, index))
+      .map((candidate, index) => toMessageDraft(candidate, index, assetCandidates))
       .filter((message) => message.blocks.length > 0)
   );
   const warnings: ExportWarning[] = [];
@@ -42,7 +45,7 @@ export function extractConversation(documentRef: Document, locationRef: Location
     sourceUrl: locationRef.href,
     extractedAt: new Date().toISOString(),
     messages,
-    assetCandidates: [],
+    assetCandidates,
     warnings
   };
 }
@@ -127,9 +130,13 @@ function detectRole(element: Element, index: number): { role: MessageRole; confi
   };
 }
 
-function toMessageDraft(candidate: MessageCandidate, index: number): ChatMessageDraft {
+function toMessageDraft(
+  candidate: MessageCandidate,
+  index: number,
+  assetCandidates: AssetCandidate[]
+): ChatMessageDraft {
   const id = `message-${index + 1}`;
-  const blocks = extractBlocks(candidate.element, id);
+  const blocks = extractBlocks(candidate.element, id, assetCandidates);
 
   return {
     id,
@@ -141,7 +148,7 @@ function toMessageDraft(candidate: MessageCandidate, index: number): ChatMessage
   };
 }
 
-function extractBlocks(element: Element, messageId: string): ContentBlockDraft[] {
+function extractBlocks(element: Element, messageId: string, assetCandidates: AssetCandidate[]): ContentBlockDraft[] {
   const clone = element.cloneNode(true) as Element;
   for (const disposable of Array.from(
     clone.querySelectorAll("button, svg, [aria-hidden='true'], [data-testid*='copy']")
@@ -158,23 +165,58 @@ function extractBlocks(element: Element, messageId: string): ContentBlockDraft[]
     return { marker: marker.trim(), text, language };
   });
 
+  const imageBlocks = Array.from(clone.querySelectorAll("img[src]")).map((image) => {
+    const assetId = `asset-${assetCandidates.length + 1}`;
+    const marker = `\n\n__CHATGPT_EXPORT_IMAGE_BLOCK_${assetId}__\n\n`;
+    const sourceUrl = image.getAttribute("src") ?? "";
+    const altText = image.getAttribute("alt")?.trim() || undefined;
+    const candidate: AssetCandidate = {
+      id: assetId,
+      messageId,
+      blockId: `${messageId}-block-pending-${assetCandidates.length + 1}`,
+      kind: "image",
+      sourceUrl,
+      ...(altText ? { altText } : {}),
+      domOrder: assetCandidates.length,
+      confidence: sourceUrl ? "high" : "low"
+    };
+    assetCandidates.push(candidate);
+    image.replaceWith(clone.ownerDocument.createTextNode(marker));
+    return { marker: marker.trim(), candidate };
+  });
+
   const htmlElement = clone as HTMLElement;
   const visibleText = (htmlElement.innerText ?? clone.textContent ?? "").trim().replace(/\n{3,}/g, "\n\n");
-  const markerPattern = /__CHATGPT_EXPORT_CODE_BLOCK_(\d+)__/g;
+  const markerPattern = /__CHATGPT_EXPORT_(CODE|IMAGE)_BLOCK_([A-Za-z0-9_-]+)__/g;
   const blocks: ContentBlockDraft[] = [];
   let cursor = 0;
   let match: RegExpExecArray | null;
 
   while ((match = markerPattern.exec(visibleText)) !== null) {
     pushParagraphBlock(blocks, messageId, visibleText.slice(cursor, match.index));
-    const codeBlock = codeBlocks[Number(match[1])];
-    if (codeBlock?.text) {
-      blocks.push({
-        id: `${messageId}-block-${blocks.length + 1}`,
-        kind: "code",
-        text: codeBlock.text,
-        ...(codeBlock.language ? { language: codeBlock.language } : {})
-      });
+    if (match[1] === "CODE") {
+      const codeBlock = codeBlocks[Number(match[2])];
+      if (codeBlock?.text) {
+        blocks.push({
+          id: `${messageId}-block-${blocks.length + 1}`,
+          kind: "code",
+          text: codeBlock.text,
+          ...(codeBlock.language ? { language: codeBlock.language } : {})
+        });
+      }
+    } else {
+      const imageBlock = imageBlocks.find((block) => block.candidate.id === match?.[2]);
+      if (imageBlock?.candidate.sourceUrl) {
+        const blockId = `${messageId}-block-${blocks.length + 1}`;
+        imageBlock.candidate.blockId = blockId;
+        blocks.push({
+          id: blockId,
+          kind: "image",
+          assetCandidateId: imageBlock.candidate.id,
+          sourceUrl: imageBlock.candidate.sourceUrl,
+          ...(imageBlock.candidate.altText ? { altText: imageBlock.candidate.altText } : {})
+        });
+      }
     }
     cursor = match.index + match[0].length;
   }
@@ -212,6 +254,9 @@ function detectCodeLanguage(pre: Element, codeElement: Element | null): string |
 function blocksToText(blocks: ContentBlockDraft[]): string {
   return blocks
     .map((block) => {
+      if (block.kind === "image") {
+        return block.altText ?? block.sourceUrl;
+      }
       if (block.kind === "code") {
         return block.text;
       }

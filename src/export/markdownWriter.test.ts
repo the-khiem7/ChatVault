@@ -149,4 +149,79 @@ CREATE EXTERNAL TABLE taxi_data_schema.yellow_taxi_trips (...)STORED AS PARQUETL
 \`\`\``);
     expect(writeMarkdown(draft)).not.toContain("LOCATI\nON");
   });
+
+  it("writes local image paths when resolved assets are available", () => {
+    const draft: ConversationDraft = {
+      title: "Image Export",
+      sourceUrl: "https://chatgpt.com/c/images",
+      extractedAt: "2026-04-30T13:00:00.000Z",
+      warnings: [],
+      assetCandidates: [
+        {
+          id: "asset-1",
+          messageId: "message-1",
+          blockId: "message-1-block-1",
+          kind: "image",
+          sourceUrl: "https://chatgpt.com/backend-api/files/image-1.png",
+          altText: "System diagram",
+          domOrder: 0,
+          confidence: "high"
+        }
+      ],
+      messages: [
+        {
+          id: "message-1",
+          index: 0,
+          role: "assistant",
+          confidence: "high",
+          warnings: [],
+          blocks: [
+            {
+              id: "message-1-block-1",
+              kind: "image",
+              assetCandidateId: "asset-1",
+              sourceUrl: "https://chatgpt.com/backend-api/files/image-1.png",
+              altText: "System diagram"
+            }
+          ]
+        }
+      ]
+    };
+
+    expect(
+      writeMarkdown(draft, {
+        assetReferences: new Map([["asset-1", { markdownPath: "assets/001.png" }]])
+      })
+    ).toContain("![System diagram](assets/001.png)");
+  });
+
+  it("keeps remote image links when no local asset reference is available", () => {
+    const draft: ConversationDraft = {
+      title: "Image Fallback",
+      sourceUrl: "https://chatgpt.com/c/images",
+      extractedAt: "2026-04-30T13:00:00.000Z",
+      warnings: [],
+      assetCandidates: [],
+      messages: [
+        {
+          id: "message-1",
+          index: 0,
+          role: "assistant",
+          confidence: "high",
+          warnings: [],
+          blocks: [
+            {
+              id: "message-1-block-1",
+              kind: "image",
+              assetCandidateId: "asset-1",
+              sourceUrl: "https://example.com/image.png",
+              altText: "Remote image"
+            }
+          ]
+        }
+      ]
+    };
+
+    expect(writeMarkdown(draft)).toContain("![Remote image](https://example.com/image.png)");
+  });
 });

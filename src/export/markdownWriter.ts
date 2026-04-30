@@ -1,6 +1,11 @@
-import type { ConversationDraft, MessageRole } from "../domain/conversation";
+import type { ConversationDraft, ImageBlock, MessageRole } from "../domain/conversation";
+import type { AssetReference } from "../assets/assetResolver";
 
-export function writeMarkdown(draft: ConversationDraft): string {
+export type MarkdownWriterOptions = {
+  assetReferences?: Map<string, AssetReference>;
+};
+
+export function writeMarkdown(draft: ConversationDraft, options: MarkdownWriterOptions = {}): string {
   const lines = [
     "---",
     `title: "${escapeYamlString(draft.title)}"`,
@@ -19,6 +24,8 @@ export function writeMarkdown(draft: ConversationDraft): string {
     for (const block of message.blocks) {
       if (block.kind === "code") {
         lines.push(formatCodeBlock(block.text, block.language), "");
+      } else if (block.kind === "image") {
+        lines.push(formatImageBlock(block, options.assetReferences), "");
       } else {
         lines.push(formatParagraphBlock(block.text), "");
       }
@@ -68,6 +75,12 @@ function formatParagraphBlock(text: string): string {
       return part;
     })
     .join("\n\n");
+}
+
+function formatImageBlock(block: ImageBlock, assetReferences: Map<string, AssetReference> | undefined): string {
+  const altText = (block.altText ?? "image").replace(/\]/g, "\\]");
+  const source = assetReferences?.get(block.assetCandidateId)?.markdownPath ?? block.sourceUrl;
+  return `![${altText}](${source})`;
 }
 
 function isSqlLikeLine(value: string): boolean {

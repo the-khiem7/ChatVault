@@ -88,7 +88,7 @@ describe("extractConversation", () => {
       "user",
       "assistant"
     ]);
-    expect(draft.messages.map((message) => message.blocks[0]?.text)).toEqual([
+    expect(draft.messages.map((message) => firstBlockText(message.blocks))).toEqual([
       "User asks first",
       "Assistant answers first",
       "User asks second",
@@ -122,7 +122,7 @@ describe("extractConversation", () => {
     const draft = extractConversation(documentRef, new URL("https://chatgpt.com/c/split"));
 
     expect(draft.messages.map((message) => message.role)).toEqual(["user", "assistant", "user"]);
-    expect(draft.messages[1]?.blocks[0]?.text).toBe("First assistant chunk\n\nSecond assistant chunk");
+    expect(firstBlockText(draft.messages[1]?.blocks ?? [])).toBe("First assistant chunk\n\nSecond assistant chunk");
     expect(draft.messages.map((message) => message.index)).toEqual([0, 1, 2]);
   });
 
@@ -160,6 +160,51 @@ LIMIT 10;</code></pre>
     ]);
   });
 
+  it("extracts visible images as image blocks and asset candidates in message order", () => {
+    const documentRef = buildDocument(`
+      <html>
+        <head><title>Images - ChatGPT</title></head>
+        <body>
+          <main>
+            <article data-testid="conversation-turn-1">
+              <div data-message-author-role="assistant">
+                <p>Here is the diagram:</p>
+                <img src="https://chatgpt.com/backend-api/files/image-1.png" alt="System diagram">
+                <p>Review it locally.</p>
+              </div>
+            </article>
+          </main>
+        </body>
+      </html>
+    `);
+
+    const draft = extractConversation(documentRef, new URL("https://chatgpt.com/c/images"));
+
+    expect(draft.messages[0]?.blocks).toEqual([
+      { id: "message-1-block-1", kind: "paragraph", text: "Here is the diagram:" },
+      {
+        id: "message-1-block-2",
+        kind: "image",
+        assetCandidateId: "asset-1",
+        sourceUrl: "https://chatgpt.com/backend-api/files/image-1.png",
+        altText: "System diagram"
+      },
+      { id: "message-1-block-3", kind: "paragraph", text: "Review it locally." }
+    ]);
+    expect(draft.assetCandidates).toEqual([
+      {
+        id: "asset-1",
+        messageId: "message-1",
+        blockId: "message-1-block-2",
+        kind: "image",
+        sourceUrl: "https://chatgpt.com/backend-api/files/image-1.png",
+        altText: "System diagram",
+        domOrder: 0,
+        confidence: "high"
+      }
+    ]);
+  });
+
   it("emits a warning when no message containers are found", () => {
     const draft = extractConversation(buildDocument("<main>No chat here</main>"), new URL("https://chatgpt.com/"));
 
@@ -174,3 +219,8 @@ LIMIT 10;</code></pre>
     ]);
   });
 });
+
+function firstBlockText(blocks: Array<{ kind: string; text?: string }>): string | undefined {
+  const block = blocks[0];
+  return block?.kind === "paragraph" || block?.kind === "code" ? block.text : undefined;
+}

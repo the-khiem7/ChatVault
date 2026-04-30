@@ -43,7 +43,7 @@ exportButton?.addEventListener("click", async () => {
         : "";
     setStatus("Done");
     setResult(
-      `Downloaded ${response.data.filename}\nMessages: ${response.data.messageCount}${warningText}`,
+      `Downloaded ${response.data.filename}\nMessages: ${response.data.messageCount}\nAssets: ${response.data.assetCount}${warningText}`,
       "success"
     );
   } catch {

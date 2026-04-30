@@ -11,20 +11,20 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.3.4` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.4.0` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
 
 ## Next Action
 
-Start Milestone 4 using the runtime-first architecture:
+Manually validate Milestone 4 image asset export in Chrome:
 
 - detect image nodes as asset candidates
 - asset naming
 - asset policy checks
 - data/blob URL conversion where possible
 - controlled fetch for allowed image blobs
-- store assets under `assets/`
-- replace Markdown links with local asset paths
+- stage saved asset references under `assets/`
+- replace Markdown image links with local asset paths when assets are resolved
 - warn when remote fallback is required
 
 Milestone 1 acceptance check is implemented and ready for manual Chrome validation:
@@ -140,7 +140,7 @@ Relevant docs:
 
 ### Milestone 4: Image Asset Export
 
-Status: Not started
+Status: Implemented pending manual Chrome validation
 
 Deliverables:
 
@@ -267,3 +267,8 @@ MVP is complete when:
 - Implemented Milestone 3 Patch 4 to de-scope SQL rewriting: keep SQL detection/fencing, but do not rewrite SQL text.
 - Closed Milestone 3 after manual validation of role balance and basic code fencing.
 - Updated active Milestone 3 patch version to `0.3.4`.
+- Started Milestone 4 at version `0.4.0`.
+- Implemented image block extraction and `AssetCandidate` discovery from visible `img[src]` nodes.
+- Added asset naming and asset resolver policy for data URLs, blob/HTTPS candidates, controlled fetch, local `assets/` paths, and remote fallback warnings.
+- Updated Markdown writing to emit local image paths when resolved and remote links when fallback is required.
+- Wired service-worker export orchestration to resolve assets before Markdown generation and report saved asset counts/warnings in the popup.

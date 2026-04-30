@@ -23,6 +23,7 @@ export type MarkdownExportResult = {
   filename: string;
   title: string;
   messageCount: number;
+  assetCount: number;
 };
 
 export type ConversationExtractionResult = ConversationDraft;

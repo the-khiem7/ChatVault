@@ -1,4 +1,5 @@
 import type { RuntimeRequest, RuntimeResponse } from "./messages";
+import type { ResolvedAssetPayload } from "../assets/assetResolver";
 
 export type ActiveTab = {
   id?: number;
@@ -10,6 +11,7 @@ export type ChromeApi = {
   injectContentScript?(tabId: number): Promise<void>;
   sendMessageToTab<T>(tabId: number, request: RuntimeRequest): Promise<RuntimeResponse<T>>;
   downloadMarkdown?(filename: string, markdown: string): Promise<void>;
+  fetchAsset?(sourceUrl: string): Promise<ResolvedAssetPayload>;
 };
 
 export function createChromeApi(): ChromeApi {
@@ -34,6 +36,17 @@ export function createChromeApi(): ChromeApi {
         filename,
         saveAs: true
       });
+    },
+    async fetchAsset(sourceUrl: string) {
+      const response = await fetch(sourceUrl);
+      if (!response.ok) {
+        throw new Error(`Asset fetch failed with status ${response.status}.`);
+      }
+
+      return {
+        bytes: await response.arrayBuffer(),
+        mimeType: response.headers.get("content-type")?.split(";")[0]?.trim() || undefined
+      };
     }
   };
 }

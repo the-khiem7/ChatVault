@@ -17,7 +17,15 @@ export type CodeBlock = {
   language?: string;
 };
 
-export type ContentBlockDraft = ParagraphBlock | CodeBlock;
+export type ImageBlock = {
+  id: string;
+  kind: "image";
+  assetCandidateId: string;
+  sourceUrl: string;
+  altText?: string;
+};
+
+export type ContentBlockDraft = ParagraphBlock | CodeBlock | ImageBlock;
 
 export type ChatMessageDraft = {
   id: string;
@@ -37,6 +45,18 @@ export type AssetCandidate = {
   altText?: string;
   domOrder: number;
   confidence: DetectionConfidence;
+};
+
+export type ExportAsset = {
+  id: string;
+  type: "image" | "file";
+  sourceUrl: string;
+  localPath: string;
+  mimeType?: string;
+  extension?: string;
+  byteLength?: number;
+  status: "saved" | "remote-fallback" | "skipped";
+  warningIds: string[];
 };
 
 export type ConversationDraft = {

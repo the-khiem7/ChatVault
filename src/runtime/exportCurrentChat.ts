@@ -1,4 +1,5 @@
 import type { ConversationDraft } from "../domain/conversation";
+import { resolveAssetCandidates } from "../assets/assetResolver";
 import { writeMarkdown } from "../export/markdownWriter";
 import { slugify } from "../export/slugify";
 import type { ChromeApi } from "./chromeApi";
@@ -40,7 +41,10 @@ export async function exportCurrentChat(
       };
     }
 
-    const markdown = writeMarkdown(draft);
+    const assetResolution = await resolveAssetCandidates(draft.assetCandidates, {
+      fetchAsset: chromeApi.fetchAsset
+    });
+    const markdown = writeMarkdown(draft, { assetReferences: assetResolution.assetReferences });
     const filename = `chatgpt-export-${slugify(draft.title)}.md`;
     if (!chromeApi.downloadMarkdown) {
       throw new Error("Markdown download is unavailable.");
@@ -52,9 +56,10 @@ export async function exportCurrentChat(
       data: {
         filename,
         title: draft.title,
-        messageCount: draft.messages.length
+        messageCount: draft.messages.length,
+        assetCount: assetResolution.assets.filter((asset) => asset.status === "saved").length
       },
-      warnings: [...(draftResponse.warnings ?? []), ...draft.warnings]
+      warnings: [...(draftResponse.warnings ?? []), ...draft.warnings, ...assetResolution.warnings]
     };
   } catch {
     return {

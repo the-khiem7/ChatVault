@@ -6,7 +6,8 @@
   "scripts": {
     "build": "vite build",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "verify:extension": "node scripts/verify-extension-bundle.mjs"
   },
   "devDependencies": {
     "@types/chrome": "^0.1.31",

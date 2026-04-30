@@ -19,9 +19,19 @@ export async function getActiveTabStatus(
   }
 
   try {
-    const summaryResponse = await chromeApi.sendMessageToTab<PageSummary>(tab.id, {
-      type: "EXTRACT_PAGE_SUMMARY"
-    });
+    const summaryRequest = { type: "EXTRACT_PAGE_SUMMARY" } as const;
+    let summaryResponse: RuntimeResponse<PageSummary>;
+
+    try {
+      summaryResponse = await chromeApi.sendMessageToTab<PageSummary>(tab.id, summaryRequest);
+    } catch (error) {
+      if (!chromeApi.injectContentScript) {
+        throw error;
+      }
+
+      await chromeApi.injectContentScript(tab.id);
+      summaryResponse = await chromeApi.sendMessageToTab<PageSummary>(tab.id, summaryRequest);
+    }
 
     if (!summaryResponse.ok) {
       return summaryResponse;

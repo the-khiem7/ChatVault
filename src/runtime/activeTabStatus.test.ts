@@ -48,4 +48,34 @@ describe("getActiveTabStatus", () => {
       warnings: []
     });
   });
+
+  it("injects the content script and retries once when the tab has no listener yet", async () => {
+    const chromeApi: ChromeApi = {
+      getActiveTab: vi.fn().mockResolvedValue({ id: 11, url: "https://chatgpt.com/c/abc" }),
+      injectContentScript: vi.fn().mockResolvedValue(undefined),
+      sendMessageToTab: vi
+        .fn()
+        .mockRejectedValueOnce(new Error("Receiving end does not exist"))
+        .mockResolvedValueOnce({
+          ok: true,
+          data: { title: "Existing tab", url: "https://chatgpt.com/c/abc" },
+          warnings: []
+        })
+    };
+
+    const response = await getActiveTabStatus(chromeApi);
+
+    expect(chromeApi.injectContentScript).toHaveBeenCalledWith(11);
+    expect(chromeApi.sendMessageToTab).toHaveBeenCalledTimes(2);
+    expect(response).toEqual({
+      ok: true,
+      data: {
+        supported: true,
+        tabId: 11,
+        url: "https://chatgpt.com/c/abc",
+        title: "Existing tab"
+      },
+      warnings: []
+    });
+  });
 });

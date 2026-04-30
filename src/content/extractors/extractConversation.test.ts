@@ -126,6 +126,40 @@ describe("extractConversation", () => {
     expect(draft.messages.map((message) => message.index)).toEqual([0, 1, 2]);
   });
 
+  it("extracts preformatted code blocks separately from paragraph text", () => {
+    const documentRef = buildDocument(`
+      <html>
+        <head><title>Code Blocks - ChatGPT</title></head>
+        <body>
+          <main>
+            <article data-testid="conversation-turn-1">
+              <div data-message-author-role="assistant">
+                <p>Run this query:</p>
+                <pre><code class="language-sql">SELECT *
+FROM taxi_raw.table_2025
+LIMIT 10;</code></pre>
+                <p>Then inspect the rows.</p>
+              </div>
+            </article>
+          </main>
+        </body>
+      </html>
+    `);
+
+    const draft = extractConversation(documentRef, new URL("https://chatgpt.com/c/code"));
+
+    expect(draft.messages[0]?.blocks).toEqual([
+      { id: "message-1-block-1", kind: "paragraph", text: "Run this query:" },
+      {
+        id: "message-1-block-2",
+        kind: "code",
+        language: "sql",
+        text: "SELECT *\nFROM taxi_raw.table_2025\nLIMIT 10;"
+      },
+      { id: "message-1-block-3", kind: "paragraph", text: "Then inspect the rows." }
+    ]);
+  });
+
   it("emits a warning when no message containers are found", () => {
     const draft = extractConversation(buildDocument("<main>No chat here</main>"), new URL("https://chatgpt.com/"));
 

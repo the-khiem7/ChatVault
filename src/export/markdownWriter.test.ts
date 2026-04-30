@@ -48,4 +48,40 @@ exportedAt: "2026-04-30T13:00:00.000Z"
 Hi user
 `);
   });
+
+  it("writes fenced code blocks with language tags", () => {
+    const draft: ConversationDraft = {
+      title: "SQL Help",
+      sourceUrl: "https://chatgpt.com/c/sql",
+      extractedAt: "2026-04-30T13:00:00.000Z",
+      assetCandidates: [],
+      warnings: [],
+      messages: [
+        {
+          id: "message-1",
+          index: 0,
+          role: "assistant",
+          confidence: "high",
+          warnings: [],
+          blocks: [
+            { id: "message-1-block-1", kind: "paragraph", text: "Run this:" },
+            {
+              id: "message-1-block-2",
+              kind: "code",
+              language: "sql",
+              text: "SELECT *\nFROM taxi_raw.table_2025\nLIMIT 10;"
+            }
+          ]
+        }
+      ]
+    };
+
+    expect(writeMarkdown(draft)).toContain(`Run this:
+
+\`\`\`sql
+SELECT *
+FROM taxi_raw.table_2025
+LIMIT 10;
+\`\`\``);
+  });
 });

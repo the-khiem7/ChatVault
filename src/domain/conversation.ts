@@ -10,7 +10,14 @@ export type ParagraphBlock = {
   text: string;
 };
 
-export type ContentBlockDraft = ParagraphBlock;
+export type CodeBlock = {
+  id: string;
+  kind: "code";
+  text: string;
+  language?: string;
+};
+
+export type ContentBlockDraft = ParagraphBlock | CodeBlock;
 
 export type ChatMessageDraft = {
   id: string;

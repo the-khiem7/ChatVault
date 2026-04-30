@@ -1,6 +1,7 @@
 import type {
   ChatMessageDraft,
   ConversationDraft,
+  ContentBlockDraft,
   DetectionConfidence,
   MessageRole
 } from "../../domain/conversation";
@@ -57,7 +58,7 @@ function mergeAdjacentSameRoleMessages(messages: ChatMessageDraft[]): ChatMessag
         {
           id: `${previous.id}-block-1`,
           kind: "paragraph",
-          text: [previous.blocks.map((block) => block.text).join("\n\n"), message.blocks.map((block) => block.text).join("\n\n")]
+          text: [blocksToText(previous.blocks), blocksToText(message.blocks)]
             .filter(Boolean)
             .join("\n\n")
         }
@@ -128,7 +129,7 @@ function detectRole(element: Element, index: number): { role: MessageRole; confi
 
 function toMessageDraft(candidate: MessageCandidate, index: number): ChatMessageDraft {
   const id = `message-${index + 1}`;
-  const text = getVisibleText(candidate.element);
+  const blocks = extractBlocks(candidate.element, id);
 
   return {
     id,
@@ -136,11 +137,11 @@ function toMessageDraft(candidate: MessageCandidate, index: number): ChatMessage
     role: candidate.role,
     confidence: candidate.confidence,
     warnings: [],
-    blocks: text ? [{ id: `${id}-block-1`, kind: "paragraph", text }] : []
+    blocks
   };
 }
 
-function getVisibleText(element: Element): string {
+function extractBlocks(element: Element, messageId: string): ContentBlockDraft[] {
   const clone = element.cloneNode(true) as Element;
   for (const disposable of Array.from(
     clone.querySelectorAll("button, svg, [aria-hidden='true'], [data-testid*='copy']")
@@ -148,6 +149,73 @@ function getVisibleText(element: Element): string {
     disposable.remove();
   }
 
+  const codeBlocks = Array.from(clone.querySelectorAll("pre")).map((pre, index) => {
+    const marker = `\n\n__CHATGPT_EXPORT_CODE_BLOCK_${index}__\n\n`;
+    const codeElement = pre.querySelector("code");
+    const text = (codeElement?.textContent ?? pre.textContent ?? "").trim();
+    const language = detectCodeLanguage(pre, codeElement);
+    pre.textContent = marker;
+    return { marker: marker.trim(), text, language };
+  });
+
   const htmlElement = clone as HTMLElement;
-  return (htmlElement.innerText ?? clone.textContent ?? "").trim().replace(/\n{3,}/g, "\n\n");
+  const visibleText = (htmlElement.innerText ?? clone.textContent ?? "").trim().replace(/\n{3,}/g, "\n\n");
+  const markerPattern = /__CHATGPT_EXPORT_CODE_BLOCK_(\d+)__/g;
+  const blocks: ContentBlockDraft[] = [];
+  let cursor = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = markerPattern.exec(visibleText)) !== null) {
+    pushParagraphBlock(blocks, messageId, visibleText.slice(cursor, match.index));
+    const codeBlock = codeBlocks[Number(match[1])];
+    if (codeBlock?.text) {
+      blocks.push({
+        id: `${messageId}-block-${blocks.length + 1}`,
+        kind: "code",
+        text: codeBlock.text,
+        ...(codeBlock.language ? { language: codeBlock.language } : {})
+      });
+    }
+    cursor = match.index + match[0].length;
+  }
+
+  pushParagraphBlock(blocks, messageId, visibleText.slice(cursor));
+  return blocks;
+}
+
+function pushParagraphBlock(blocks: ContentBlockDraft[], messageId: string, text: string): void {
+  const normalized = text.trim().replace(/\n{3,}/g, "\n\n");
+  if (!normalized) {
+    return;
+  }
+
+  blocks.push({
+    id: `${messageId}-block-${blocks.length + 1}`,
+    kind: "paragraph",
+    text: normalized
+  });
+}
+
+function detectCodeLanguage(pre: Element, codeElement: Element | null): string | undefined {
+  const languageSource = [
+    codeElement?.getAttribute("data-language"),
+    pre.getAttribute("data-language"),
+    codeElement?.className,
+    pre.className
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const match = languageSource.match(/language-([a-z0-9_-]+)/i);
+  return match?.[1]?.toLowerCase();
+}
+
+function blocksToText(blocks: ContentBlockDraft[]): string {
+  return blocks
+    .map((block) => {
+      if (block.kind === "code") {
+        return block.text;
+      }
+      return block.text;
+    })
+    .join("\n\n");
 }

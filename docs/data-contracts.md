@@ -109,6 +109,8 @@ Minimum MVP block support:
 
 Unknown blocks must preserve visible text where possible.
 
+Code blocks must be represented as separate `code` blocks with optional language metadata and rendered as fenced Markdown.
+
 ## Assets
 
 ```ts

@@ -17,7 +17,11 @@ export function writeMarkdown(draft: ConversationDraft): string {
     lines.push(`# ${formatRole(message.role)}`, "");
 
     for (const block of message.blocks) {
-      lines.push(normalizeContentHeadings(block.text), "");
+      if (block.kind === "code") {
+        lines.push(formatCodeBlock(block.text, block.language), "");
+      } else {
+        lines.push(normalizeContentHeadings(block.text), "");
+      }
     }
   }
 
@@ -43,4 +47,9 @@ function escapeYamlString(value: string): string {
 
 function normalizeContentHeadings(value: string): string {
   return value.replace(/^#{1,6}\s+(.+)$/gm, "## $1");
+}
+
+function formatCodeBlock(text: string, language: string | undefined): string {
+  const fence = text.includes("```") ? "````" : "```";
+  return `${fence}${language ?? ""}\n${text}\n${fence}`;
 }

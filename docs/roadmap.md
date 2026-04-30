@@ -11,20 +11,19 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.2.4` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.3.1` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
 
 ## Next Action
 
-Start Milestone 2 using the runtime-first architecture:
+Continue Milestone 3 using the runtime-first architecture:
 
-- conversation title detection refinement
-- message container detection
-- user/assistant role detection
-- visible text extraction
-- `ConversationDraft` output
-- Markdown writer
-- interim Markdown download
+- code block extraction with fenced Markdown
+- list extraction
+- table extraction
+- quote extraction
+- unknown block fallback
+- basic fallback HTML-to-Markdown conversion if needed
 
 Milestone 1 acceptance check is implemented and ready for manual Chrome validation:
 
@@ -88,7 +87,7 @@ Relevant docs:
 
 ### Milestone 2: Basic Text Export
 
-Status: Implemented; needs manual Chrome validation
+Status: Implemented and manually validated
 
 Deliverables:
 
@@ -115,7 +114,7 @@ Relevant docs:
 
 ### Milestone 3: Code and Formatting Preservation
 
-Status: Not started
+Status: In progress
 
 Deliverables:
 
@@ -256,3 +255,6 @@ MVP is complete when:
 - Updated active Milestone 2 patch version to `0.2.3`.
 - Implemented Milestone 2 Patch 4 to merge adjacent same-role chunks that ChatGPT exposes as separate article nodes.
 - Updated active Milestone 2 patch version to `0.2.4`.
+- Closed Milestone 2 after manual validation showed balanced User/Assistant turns and no consecutive same-role split.
+- Started Milestone 3 Patch 1 with code block extraction and fenced Markdown writing.
+- Updated active Milestone 3 patch version to `0.3.1`.

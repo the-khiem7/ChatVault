@@ -24,8 +24,9 @@ const MESSAGE_SELECTOR = [
 
 export function extractConversation(documentRef: Document, locationRef: Location | URL): ConversationDraft {
   const assetCandidates: AssetCandidate[] = [];
+  const messageCandidates = findMessageCandidates(documentRef);
   const messages = mergeAdjacentSameRoleMessages(
-    findMessageCandidates(documentRef)
+    messageCandidates
       .map((candidate, index) => toMessageDraft(candidate, index, assetCandidates))
       .filter((message) => message.blocks.length > 0)
   );
@@ -46,8 +47,16 @@ export function extractConversation(documentRef: Document, locationRef: Location
     extractedAt: new Date().toISOString(),
     messages,
     assetCandidates,
+    diagnostics: {
+      documentImageCount: documentRef.querySelectorAll("img[src]").length,
+      messageImageCount: countMessageImages(messageCandidates)
+    },
     warnings
   };
+}
+
+function countMessageImages(messageCandidates: MessageCandidate[]): number {
+  return messageCandidates.reduce((count, candidate) => count + candidate.element.querySelectorAll("img[src]").length, 0);
 }
 
 function mergeAdjacentSameRoleMessages(messages: ChatMessageDraft[]): ChatMessageDraft[] {
@@ -78,11 +87,7 @@ function mergeAdjacentSameRoleMessages(messages: ChatMessageDraft[]): ChatMessag
 }
 
 function findMessageCandidates(documentRef: Document): MessageCandidate[] {
-  const articleElements = Array.from(
-    documentRef.querySelectorAll("article[data-testid^='conversation-turn'], article[data-message-author-role]")
-  );
-  const elements =
-    articleElements.length > 0 ? articleElements : uniqueRootElements(documentRef.querySelectorAll(MESSAGE_SELECTOR));
+  const elements = uniqueRootElements(documentRef.querySelectorAll(MESSAGE_SELECTOR));
 
   return elements.map((element, index) => {
     const role = detectRole(element, index);
@@ -153,6 +158,9 @@ function extractBlocks(element: Element, messageId: string, assetCandidates: Ass
   for (const disposable of Array.from(
     clone.querySelectorAll("button, svg, [aria-hidden='true'], [data-testid*='copy']")
   )) {
+    if (disposable.matches("button") && disposable.querySelector("img[src]")) {
+      continue;
+    }
     disposable.remove();
   }
 

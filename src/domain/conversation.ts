@@ -59,11 +59,17 @@ export type ExportAsset = {
   warningIds: string[];
 };
 
+export type ConversationDiagnostics = {
+  documentImageCount: number;
+  messageImageCount: number;
+};
+
 export type ConversationDraft = {
   title: string;
   sourceUrl: string;
   extractedAt: string;
   messages: ChatMessageDraft[];
   assetCandidates: AssetCandidate[];
+  diagnostics?: ConversationDiagnostics;
   warnings: ExportWarning[];
 };

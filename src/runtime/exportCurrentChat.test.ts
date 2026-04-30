@@ -13,6 +13,10 @@ describe("exportCurrentChat", () => {
           sourceUrl: "https://chatgpt.com/c/abc",
           extractedAt: "2026-04-30T13:00:00.000Z",
           assetCandidates: [],
+          diagnostics: {
+            documentImageCount: 0,
+            messageImageCount: 0
+          },
           warnings: [],
           messages: [
             {
@@ -44,6 +48,8 @@ describe("exportCurrentChat", () => {
         title: "Data Analysis - ChatGPT",
         messageCount: 1,
         assetCandidateCount: 0,
+        documentImageCount: 0,
+        messageImageCount: 0,
         assetCount: 0
       },
       warnings: []
@@ -59,6 +65,10 @@ describe("exportCurrentChat", () => {
           title: "Images - ChatGPT",
           sourceUrl: "https://chatgpt.com/c/images",
           extractedAt: "2026-04-30T13:00:00.000Z",
+          diagnostics: {
+            documentImageCount: 1,
+            messageImageCount: 1
+          },
           assetCandidates: [
             {
               id: "asset-1",
@@ -106,6 +116,8 @@ describe("exportCurrentChat", () => {
       ok: true,
       data: {
         assetCandidateCount: 1,
+        documentImageCount: 1,
+        messageImageCount: 1,
         assetCount: 1
       },
       warnings: []

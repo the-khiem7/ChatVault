@@ -58,6 +58,8 @@ export async function exportCurrentChat(
         title: draft.title,
         messageCount: draft.messages.length,
         assetCandidateCount: draft.assetCandidates.length,
+        documentImageCount: draft.diagnostics?.documentImageCount ?? 0,
+        messageImageCount: draft.diagnostics?.messageImageCount ?? 0,
         assetCount: assetResolution.assets.filter((asset) => asset.status === "saved").length
       },
       warnings: [...(draftResponse.warnings ?? []), ...draft.warnings, ...assetResolution.warnings]

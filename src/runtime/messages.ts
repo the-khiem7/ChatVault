@@ -24,6 +24,8 @@ export type MarkdownExportResult = {
   title: string;
   messageCount: number;
   assetCandidateCount: number;
+  documentImageCount: number;
+  messageImageCount: number;
   assetCount: number;
 };
 

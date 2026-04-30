@@ -203,6 +203,85 @@ LIMIT 10;</code></pre>
         confidence: "high"
       }
     ]);
+    expect(draft.diagnostics).toEqual({
+      documentImageCount: 1,
+      messageImageCount: 1
+    });
+  });
+
+  it("reports page images that are outside detected message containers", () => {
+    const documentRef = buildDocument(`
+      <html>
+        <head><title>Image Outside Messages - ChatGPT</title></head>
+        <body>
+          <main>
+            <article data-testid="conversation-turn-1">
+              <div data-message-author-role="assistant">No image inside this message.</div>
+            </article>
+            <aside>
+              <img src="https://chatgpt.com/backend-api/files/sidebar-image.png" alt="Sidebar image">
+            </aside>
+          </main>
+        </body>
+      </html>
+    `);
+
+    const draft = extractConversation(documentRef, new URL("https://chatgpt.com/c/outside-image"));
+
+    expect(draft.assetCandidates).toEqual([]);
+    expect(draft.diagnostics).toEqual({
+      documentImageCount: 1,
+      messageImageCount: 0
+    });
+  });
+
+  it("extracts uploaded images from ChatGPT role nodes that are outside article turns", () => {
+    const documentRef = buildDocument(`
+      <html>
+        <head><title>Standalone Uploaded Image - ChatGPT</title></head>
+        <body>
+          <main>
+            <article data-testid="conversation-turn-1">
+              <div data-message-author-role="assistant">Text answer before the upload.</div>
+            </article>
+            <div data-message-author-role="user" class="min-h-8 text-message relative flex w-full flex-col items-end gap-2">
+              <div class="flex w-full flex-col gap-1 empty:hidden items-end">
+                <div class="flex w-[var(--user-chat-width,70%)] flex-col items-end">
+                  <div class="group/message-image bg-token-main-surface-secondary text-token-text-tertiary relative flex h-auto w-full max-w-lg">
+                    <button aria-label="Open image in full view">
+                      <img
+                        src="https://chatgpt.com/backend-api/estuary/content?id=file_00000000bb0c71fa84795aa9b2028327&ts=493771&p=fs&cid=1&sig=abc"
+                        alt="Uploaded image"
+                        class="max-w-full object-cover"
+                      >
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </body>
+      </html>
+    `);
+
+    const draft = extractConversation(documentRef, new URL("https://chatgpt.com/c/uploaded-image"));
+
+    expect(draft.messages.map((message) => message.role)).toEqual(["assistant", "user"]);
+    expect(draft.messages[1]?.blocks).toEqual([
+      {
+        id: "message-2-block-1",
+        kind: "image",
+        assetCandidateId: "asset-1",
+        sourceUrl:
+          "https://chatgpt.com/backend-api/estuary/content?id=file_00000000bb0c71fa84795aa9b2028327&ts=493771&p=fs&cid=1&sig=abc",
+        altText: "Uploaded image"
+      }
+    ]);
+    expect(draft.assetCandidates).toHaveLength(1);
+    expect(draft.diagnostics).toEqual({
+      documentImageCount: 1,
+      messageImageCount: 1
+    });
   });
 
   it("emits a warning when no message containers are found", () => {

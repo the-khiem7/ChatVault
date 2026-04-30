@@ -1,4 +1,5 @@
 import type { ExportError, ExportWarning } from "../domain/warning";
+import type { ConversationDraft } from "../domain/conversation";
 
 export type PageSummary = {
   title: string;
@@ -14,7 +15,17 @@ export type ActiveTabStatus = {
 
 export type RuntimeRequest =
   | { type: "GET_ACTIVE_TAB_STATUS" }
-  | { type: "EXTRACT_PAGE_SUMMARY" };
+  | { type: "EXPORT_CURRENT_CHAT" }
+  | { type: "EXTRACT_PAGE_SUMMARY" }
+  | { type: "EXTRACT_CONVERSATION" };
+
+export type MarkdownExportResult = {
+  filename: string;
+  title: string;
+  messageCount: number;
+};
+
+export type ConversationExtractionResult = ConversationDraft;
 
 export type RuntimeResponse<T> =
   | { ok: true; data: T; warnings?: ExportWarning[] }

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ChatGPT Markdown Exporter",
   "description": "Export the current ChatGPT conversation into a local Markdown archive.",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "action": {
     "default_popup": "src/popup/popup.html",
     "default_title": "Export ChatGPT conversation"

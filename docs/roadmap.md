@@ -11,7 +11,7 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.5.1` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.5.2` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
 
 ## Next Action
@@ -315,3 +315,5 @@ MVP is complete when:
 - Updated popup error reporting to include the original folder export error message when available.
 - Updated active Milestone 5 patch version to `0.5.1`.
 - Manually validated Milestone 5 Patch 1 in Chrome: folder export wrote `conversation.md` and 69 asset files to the selected `output/` directory, with Markdown references matching the written assets.
+- Implemented Milestone 5 Patch 2 guided workflow popup UI: step-based folder/export layout, status pill, two-action control row, concise success metrics, and secondary diagnostics.
+- Updated active Milestone 5 patch version to `0.5.2`.

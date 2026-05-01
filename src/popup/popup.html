@@ -8,14 +8,33 @@
   </head>
   <body>
     <main class="popup-shell">
-      <header>
+      <header class="popup-header">
         <h1>ChatGPT Export</h1>
-        <p id="statusText">Ready</p>
+        <span id="statusText" class="status-pill">Ready</span>
       </header>
 
-      <button id="chooseFolderButton" type="button" class="secondary-button">Choose Folder</button>
-      <p id="folderText">No folder selected</p>
-      <button id="exportButton" type="button">Export Current Chat</button>
+      <section class="steps" aria-label="Export workflow">
+        <section id="folderStep" class="step" data-state="pending">
+          <span class="step-number">1</span>
+          <div>
+            <h2>Choose export folder</h2>
+            <p id="folderText">No folder selected</p>
+          </div>
+        </section>
+
+        <section id="exportStep" class="step" data-state="pending">
+          <span class="step-number">2</span>
+          <div>
+            <h2>Export current chat</h2>
+            <p>Writes conversation.md and assets/ into a slug folder.</p>
+          </div>
+        </section>
+      </section>
+
+      <section class="actions" aria-label="Export actions">
+        <button id="chooseFolderButton" type="button" class="secondary-button">Choose Folder</button>
+        <button id="exportButton" type="button">Export</button>
+      </section>
 
       <section id="resultPanel" class="result-panel" aria-live="polite"></section>
     </main>

@@ -2,12 +2,15 @@ import "./popup.css";
 import type { FolderExportResult, RuntimeRequest, RuntimeResponse } from "../runtime/messages";
 import { writeFolderExportArtifact } from "./folderWriter";
 import { formatExportError } from "./exportError";
+import { buildSuccessViewModel } from "./resultView";
 
 const chooseFolderButton = document.querySelector<HTMLButtonElement>("#chooseFolderButton");
 const exportButton = document.querySelector<HTMLButtonElement>("#exportButton");
 const statusText = document.querySelector<HTMLElement>("#statusText");
 const folderText = document.querySelector<HTMLElement>("#folderText");
 const resultPanel = document.querySelector<HTMLElement>("#resultPanel");
+const folderStep = document.querySelector<HTMLElement>("#folderStep");
+const exportStep = document.querySelector<HTMLElement>("#exportStep");
 let selectedFolder: FileSystemDirectoryHandle | undefined;
 
 declare global {
@@ -29,9 +32,49 @@ function setResult(message: string, state: "ready" | "success" | "error" = "read
   }
 }
 
+function setSuccessResult(result: FolderExportResult, warningCount: number): void {
+  if (!resultPanel) {
+    return;
+  }
+
+  const viewModel = buildSuccessViewModel(result, warningCount);
+  resultPanel.dataset.state = "success";
+  resultPanel.replaceChildren();
+
+  const title = document.createElement("div");
+  title.className = "result-title";
+  title.textContent = viewModel.title;
+  resultPanel.append(title);
+
+  const metrics = document.createElement("div");
+  metrics.className = "metrics";
+  for (const metric of viewModel.metrics) {
+    const metricElement = document.createElement("div");
+    metricElement.className = "metric";
+    const value = document.createElement("b");
+    value.textContent = metric.value;
+    const label = document.createElement("span");
+    label.textContent = metric.label;
+    metricElement.append(value, label);
+    metrics.append(metricElement);
+  }
+  resultPanel.append(metrics);
+
+  const detail = document.createElement("div");
+  detail.className = "result-detail";
+  detail.textContent = viewModel.detail;
+  resultPanel.append(detail);
+}
+
 function setFolderLabel(message: string): void {
   if (folderText) {
     folderText.textContent = message;
+  }
+}
+
+function setStepState(step: HTMLElement | null, state: "pending" | "done"): void {
+  if (step) {
+    step.dataset.state = state;
   }
 }
 
@@ -56,7 +99,8 @@ async function chooseFolder(): Promise<FileSystemDirectoryHandle> {
 
   const folder = await window.showDirectoryPicker({ mode: "readwrite" });
   selectedFolder = folder;
-  setFolderLabel(`Folder selected: ${folder.name}`);
+  setFolderLabel(`Selected: ${folder.name}`);
+  setStepState(folderStep, "done");
   return folder;
 }
 
@@ -94,6 +138,7 @@ exportButton?.addEventListener("click", async () => {
     }
 
     setStatus("Writing files");
+    setStepState(exportStep, "pending");
     setResult(`Writing ${response.data.rootFolder}/...`);
     await writeFolderExportArtifact(folder, {
       rootFolder: response.data.rootFolder,
@@ -108,15 +153,10 @@ exportButton?.addEventListener("click", async () => {
       warnings: response.warnings ?? []
     });
 
-    const warningText =
-      response.warnings && response.warnings.length > 0
-        ? `\nWarnings: ${response.warnings.length}`
-        : "";
+    const warningCount = response.warnings?.length ?? 0;
     setStatus("Done");
-    setResult(
-      `Exported to ${response.data.rootFolder}/\nMessages: ${response.data.messageCount}\nPage images: ${response.data.documentImageCount}\nMessage images: ${response.data.messageImageCount}\nImage candidates: ${response.data.assetCandidateCount}\nAssets saved: ${response.data.assetCount}${warningText}`,
-      "success"
-    );
+    setStepState(exportStep, "done");
+    setSuccessResult(response.data, warningCount);
   } catch (error) {
     setStatus("Failed");
     setResult(formatExportError(error), "error");

@@ -2,11 +2,14 @@ import type { ConversationDraft } from "../domain/conversation";
 import { resolveAssetCandidates } from "../assets/assetResolver";
 import { buildFolderExportArtifact } from "../export/folderExportBuilder";
 import type { ChromeApi } from "./chromeApi";
-import type { FolderExportResult, RuntimeResponse } from "./messages";
+import type { ExportProgressMessage, FolderExportResult, RuntimeResponse } from "./messages";
 import { isSupportedChatGptUrl } from "./urlSupport";
 
+export type ExportProgress = Omit<ExportProgressMessage, "type" | "requestId">;
+
 export async function exportCurrentChat(
-  chromeApi: ChromeApi
+  chromeApi: ChromeApi,
+  onProgress?: (progress: ExportProgress) => void
 ): Promise<RuntimeResponse<FolderExportResult>> {
   const tab = await chromeApi.getActiveTab();
 
@@ -41,7 +44,8 @@ export async function exportCurrentChat(
     }
 
     const assetResolution = await resolveAssetCandidates(draft.assetCandidates, {
-      fetchAsset: chromeApi.fetchAsset
+      fetchAsset: chromeApi.fetchAsset,
+      onProgress
     });
     const artifact = buildFolderExportArtifact(draft, {
       assetReferences: assetResolution.assetReferences,

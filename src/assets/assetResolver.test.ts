@@ -61,4 +61,30 @@ describe("resolveAssetCandidates", () => {
     expect(result.assets[0]?.status).toBe("remote-fallback");
     expect(result.warnings[0]?.code).toBe("REMOTE_ASSET_FALLBACK");
   });
+
+  it("reports resolving progress after each image candidate", async () => {
+    const onProgress = vi.fn();
+
+    await resolveAssetCandidates(
+      [
+        imageCandidate({ id: "asset-1", domOrder: 0 }),
+        imageCandidate({ id: "asset-2", domOrder: 1 })
+      ],
+      { onProgress }
+    );
+
+    expect(onProgress).toHaveBeenCalledTimes(2);
+    expect(onProgress).toHaveBeenNthCalledWith(1, {
+      phase: "resolving-assets",
+      completed: 1,
+      total: 2,
+      currentLabel: "asset-1"
+    });
+    expect(onProgress).toHaveBeenNthCalledWith(2, {
+      phase: "resolving-assets",
+      completed: 2,
+      total: 2,
+      currentLabel: "asset-2"
+    });
+  });
 });

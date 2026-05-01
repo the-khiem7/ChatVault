@@ -16,9 +16,20 @@ export type ActiveTabStatus = {
 
 export type RuntimeRequest =
   | { type: "GET_ACTIVE_TAB_STATUS" }
-  | { type: "EXPORT_CURRENT_CHAT" }
+  | { type: "EXPORT_CURRENT_CHAT"; requestId?: string }
   | { type: "EXTRACT_PAGE_SUMMARY" }
   | { type: "EXTRACT_CONVERSATION" };
+
+export type ExportProgressPhase = "resolving-assets" | "writing-assets";
+
+export type ExportProgressMessage = {
+  type: "EXPORT_PROGRESS";
+  requestId: string;
+  phase: ExportProgressPhase;
+  completed: number;
+  total: number;
+  currentLabel: string;
+};
 
 export type FolderExportResult = {
   rootFolder: string;

@@ -135,4 +135,62 @@ describe("exportCurrentChat", () => {
       warnings: []
     });
   });
+
+  it("publishes resolving progress while assets are processed", async () => {
+    const onProgress = vi.fn();
+    const chromeApi: ChromeApi = {
+      getActiveTab: vi.fn().mockResolvedValue({ id: 5, url: "https://chatgpt.com/c/images" }),
+      sendMessageToTab: vi.fn().mockResolvedValue({
+        ok: true,
+        data: {
+          title: "Images - ChatGPT",
+          sourceUrl: "https://chatgpt.com/c/images",
+          extractedAt: "2026-04-30T13:00:00.000Z",
+          diagnostics: {
+            documentImageCount: 1,
+            messageImageCount: 1
+          },
+          assetCandidates: [
+            {
+              id: "asset-1",
+              messageId: "message-1",
+              blockId: "message-1-block-1",
+              kind: "image",
+              sourceUrl: "data:image/png;base64,aGVsbG8=",
+              domOrder: 0,
+              confidence: "high"
+            }
+          ],
+          warnings: [],
+          messages: [
+            {
+              id: "message-1",
+              index: 0,
+              role: "assistant",
+              confidence: "high",
+              warnings: [],
+              blocks: [
+                {
+                  id: "message-1-block-1",
+                  kind: "image",
+                  assetCandidateId: "asset-1",
+                  sourceUrl: "data:image/png;base64,aGVsbG8="
+                }
+              ]
+            }
+          ]
+        },
+        warnings: []
+      })
+    };
+
+    await exportCurrentChat(chromeApi, onProgress);
+
+    expect(onProgress).toHaveBeenCalledWith({
+      phase: "resolving-assets",
+      completed: 1,
+      total: 1,
+      currentLabel: "asset-1"
+    });
+  });
 });

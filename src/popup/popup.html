@@ -36,6 +36,15 @@
         <button id="exportButton" type="button">Export</button>
       </section>
 
+      <section id="progressPanel" class="progress-panel" hidden>
+        <div class="progress-header">
+          <span id="progressTitle">Resolving images</span>
+          <span id="progressCount">0 / 0</span>
+        </div>
+        <progress id="assetProgress" value="0" max="1"></progress>
+        <p id="progressDetail"></p>
+      </section>
+
       <section id="resultPanel" class="result-panel" aria-live="polite"></section>
     </main>
   </body>

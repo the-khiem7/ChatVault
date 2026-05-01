@@ -13,6 +13,14 @@ export type ResolvedAssetPayload = {
 
 export type AssetResolverOptions = {
   fetchAsset?: (sourceUrl: string) => Promise<ResolvedAssetPayload>;
+  onProgress?: (progress: AssetProgress) => void;
+};
+
+export type AssetProgress = {
+  phase: "resolving-assets";
+  completed: number;
+  total: number;
+  currentLabel: string;
 };
 
 export type AssetResolutionResult = {
@@ -39,7 +47,7 @@ export async function resolveAssetCandidates(
   const assetReferences = new Map<string, AssetReference>();
   const warnings: ExportWarning[] = [];
 
-  for (const candidate of sortedCandidates) {
+  for (const [index, candidate] of sortedCandidates.entries()) {
     const resolved = await resolveCandidate(candidate, assets.length, options);
     assets.push(resolved.asset);
 
@@ -52,6 +60,12 @@ export async function resolveAssetCandidates(
     if (resolved.warning) {
       warnings.push(resolved.warning);
     }
+    options.onProgress?.({
+      phase: "resolving-assets",
+      completed: index + 1,
+      total: sortedCandidates.length,
+      currentLabel: candidate.id
+    });
   }
 
   return { assets, assetReferences, assetFiles, warnings };

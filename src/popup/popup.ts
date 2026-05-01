@@ -1,5 +1,6 @@
 import "./popup.css";
 import type { FolderExportResult, RuntimeRequest, RuntimeResponse } from "../runtime/messages";
+import type { ExportProgressMessage } from "../runtime/messages";
 import { writeFolderExportArtifact } from "./folderWriter";
 import { formatExportError } from "./exportError";
 import { buildSuccessViewModel } from "./resultView";
@@ -11,7 +12,13 @@ const folderText = document.querySelector<HTMLElement>("#folderText");
 const resultPanel = document.querySelector<HTMLElement>("#resultPanel");
 const folderStep = document.querySelector<HTMLElement>("#folderStep");
 const exportStep = document.querySelector<HTMLElement>("#exportStep");
+const progressPanel = document.querySelector<HTMLElement>("#progressPanel");
+const progressTitle = document.querySelector<HTMLElement>("#progressTitle");
+const progressCount = document.querySelector<HTMLElement>("#progressCount");
+const progressDetail = document.querySelector<HTMLElement>("#progressDetail");
+const assetProgress = document.querySelector<HTMLProgressElement>("#assetProgress");
 let selectedFolder: FileSystemDirectoryHandle | undefined;
+let activeRequestId: string | undefined;
 
 declare global {
   interface Window {
@@ -88,9 +95,46 @@ function setBusy(isBusy: boolean): void {
 }
 
 async function requestExportCurrentChat(): Promise<RuntimeResponse<FolderExportResult>> {
-  const request: RuntimeRequest = { type: "EXPORT_CURRENT_CHAT" };
+  activeRequestId = crypto.randomUUID();
+  const request: RuntimeRequest = { type: "EXPORT_CURRENT_CHAT", requestId: activeRequestId };
   return chrome.runtime.sendMessage(request);
 }
+
+function updateProgress(title: string, completed: number, total: number, currentLabel: string): void {
+  if (progressPanel) {
+    progressPanel.hidden = false;
+  }
+  if (progressTitle) {
+    progressTitle.textContent = title;
+  }
+  if (progressCount) {
+    progressCount.textContent = `${completed} / ${total}`;
+  }
+  if (assetProgress) {
+    assetProgress.max = Math.max(total, 1);
+    assetProgress.value = Math.min(completed, total);
+  }
+  if (progressDetail) {
+    progressDetail.textContent = currentLabel;
+  }
+}
+
+function hideProgress(): void {
+  if (progressPanel) {
+    progressPanel.hidden = true;
+  }
+}
+
+chrome.runtime.onMessage.addListener((message: ExportProgressMessage) => {
+  if (message.type !== "EXPORT_PROGRESS" || message.requestId !== activeRequestId) {
+    return false;
+  }
+
+  if (message.phase === "resolving-assets") {
+    updateProgress("Resolving images", message.completed, message.total, message.currentLabel);
+  }
+  return false;
+});
 
 async function chooseFolder(): Promise<FileSystemDirectoryHandle> {
   if (!window.showDirectoryPicker) {
@@ -140,6 +184,8 @@ exportButton?.addEventListener("click", async () => {
     setStatus("Writing files");
     setStepState(exportStep, "pending");
     setResult(`Writing ${response.data.rootFolder}/...`);
+    const totalAssets = response.data.files.filter((file) => file.relativePath.startsWith("assets/")).length;
+    updateProgress("Writing images", 0, totalAssets, totalAssets > 0 ? "Starting asset writes" : "No images to write");
     await writeFolderExportArtifact(folder, {
       rootFolder: response.data.rootFolder,
       files: response.data.files,
@@ -151,11 +197,16 @@ exportButton?.addEventListener("click", async () => {
           .filter((path) => path.startsWith("assets/"))
       },
       warnings: response.warnings ?? []
+    }, {
+      onProgress(progress) {
+        updateProgress("Writing images", progress.completed, progress.total, progress.currentLabel);
+      }
     });
 
     const warningCount = response.warnings?.length ?? 0;
     setStatus("Done");
     setStepState(exportStep, "done");
+    hideProgress();
     setSuccessResult(response.data, warningCount);
   } catch (error) {
     setStatus("Failed");

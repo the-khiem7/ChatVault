@@ -130,6 +130,59 @@ button:disabled {
   overflow-wrap: anywhere;
 }
 
+.progress-panel {
+  display: grid;
+  gap: 7px;
+  margin: 0 16px;
+  border: 1px solid #d9e2ec;
+  border-radius: 6px;
+  background: #f8fafc;
+  padding: 10px;
+}
+
+.progress-panel[hidden] {
+  display: none;
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #334e68;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+progress {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  background: #e6ebf1;
+}
+
+progress::-webkit-progress-bar {
+  border-radius: 999px;
+  background: #e6ebf1;
+}
+
+progress::-webkit-progress-value {
+  border-radius: 999px;
+  background: #0f766e;
+}
+
+progress::-moz-progress-bar {
+  border-radius: 999px;
+  background: #0f766e;
+}
+
+#progressDetail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .result-panel:empty {
   display: none;
 }

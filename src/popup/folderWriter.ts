@@ -1,5 +1,16 @@
 import type { FolderExportArtifact, FolderExportFile } from "../export/folderExportBuilder";
 
+export type FolderWriteProgress = {
+  phase: "writing-assets";
+  completed: number;
+  total: number;
+  currentLabel: string;
+};
+
+export type FolderWriterOptions = {
+  onProgress?: (progress: FolderWriteProgress) => void;
+};
+
 type WritableFileHandle = {
   createWritable(): Promise<{
     write(content: string | Blob): Promise<void>;
@@ -14,13 +25,29 @@ type WritableDirectoryHandle = {
 
 export async function writeFolderExportArtifact(
   selectedFolder: WritableDirectoryHandle,
-  artifact: FolderExportArtifact
+  artifact: FolderExportArtifact,
+  options: FolderWriterOptions = {}
 ): Promise<void> {
   const rootFolder = await selectedFolder.getDirectoryHandle(artifact.rootFolder, { create: true });
+  const assetFiles = new Set(artifact.files.filter((file) => isAssetFile(file)).map((file) => file.relativePath));
+  let writtenAssets = 0;
 
   for (const file of artifact.files) {
     await writeExportFile(rootFolder, file);
+    if (assetFiles.has(file.relativePath)) {
+      writtenAssets += 1;
+      options.onProgress?.({
+        phase: "writing-assets",
+        completed: writtenAssets,
+        total: assetFiles.size,
+        currentLabel: file.relativePath
+      });
+    }
   }
+}
+
+function isAssetFile(file: FolderExportFile): boolean {
+  return file.relativePath.startsWith("assets/");
 }
 
 async function writeExportFile(rootFolder: WritableDirectoryHandle, file: FolderExportFile): Promise<void> {

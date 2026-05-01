@@ -187,6 +187,10 @@ progress::-moz-progress-bar {
   display: none;
 }
 
+.result-panel[hidden] {
+  display: none;
+}
+
 .result-panel[data-state="success"] {
   border-color: #d8eee7;
   background: #f4fbf8;

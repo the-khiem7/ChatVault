@@ -34,6 +34,7 @@ function setStatus(status: string): void {
 
 function setResult(message: string, state: "ready" | "success" | "error" = "ready"): void {
   if (resultPanel) {
+    resultPanel.hidden = false;
     resultPanel.textContent = message;
     resultPanel.dataset.state = state;
   }
@@ -45,6 +46,7 @@ function setSuccessResult(result: FolderExportResult, warningCount: number): voi
   }
 
   const viewModel = buildSuccessViewModel(result, warningCount);
+  resultPanel.hidden = false;
   resultPanel.dataset.state = "success";
   resultPanel.replaceChildren();
 
@@ -71,6 +73,13 @@ function setSuccessResult(result: FolderExportResult, warningCount: number): voi
   detail.className = "result-detail";
   detail.textContent = viewModel.detail;
   resultPanel.append(detail);
+}
+
+function hideResult(): void {
+  if (resultPanel) {
+    resultPanel.hidden = true;
+    resultPanel.replaceChildren();
+  }
 }
 
 function setFolderLabel(message: string): void {
@@ -167,11 +176,11 @@ chooseFolderButton?.addEventListener("click", async () => {
 
 exportButton?.addEventListener("click", async () => {
   setBusy(true);
+  hideResult();
 
   try {
     const folder = selectedFolder ?? (await chooseFolder());
     setStatus("Checking page");
-    setResult("Checking the active tab...");
 
     const response = await requestExportCurrentChat();
 
@@ -183,7 +192,6 @@ exportButton?.addEventListener("click", async () => {
 
     setStatus("Writing files");
     setStepState(exportStep, "pending");
-    setResult(`Writing ${response.data.rootFolder}/...`);
     const totalAssets = response.data.files.filter((file) => file.relativePath.startsWith("assets/")).length;
     updateProgress("Writing images", 0, totalAssets, totalAssets > 0 ? "Starting asset writes" : "No images to write");
     await writeFolderExportArtifact(folder, {

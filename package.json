@@ -1,6 +1,6 @@
 {
-  "name": "chatgpt-markdown-exporter",
-  "version": "0.5.5",
+  "name": "chatcargo",
+  "version": "0.5.6",
   "private": true,
   "type": "module",
   "scripts": {

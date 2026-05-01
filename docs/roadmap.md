@@ -11,7 +11,7 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.5.5` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.5.6` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
 
 ## Next Action
@@ -324,3 +324,5 @@ MVP is complete when:
 - Updated active Milestone 5 patch version to `0.5.4`.
 - Implemented Milestone 5 Patch 5 to add bottom spacing only when the progress panel is visible, avoiding global popup padding changes.
 - Updated active Milestone 5 patch version to `0.5.5`.
+- Implemented Milestone 5 Patch 6 to rename product branding to ChatCargo across extension metadata, popup title, and project documentation.
+- Updated active Milestone 5 patch version to `0.5.6`.

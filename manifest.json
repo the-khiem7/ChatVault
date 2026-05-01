@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "ChatGPT Markdown Exporter",
+  "name": "ChatCargo",
   "description": "Export the current ChatGPT conversation into a local Markdown archive.",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "action": {
     "default_popup": "src/popup/popup.html",
-    "default_title": "Export ChatGPT conversation"
+    "default_title": "ChatCargo"
   },
   "background": {
     "service_worker": "src/serviceWorker.js",

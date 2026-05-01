@@ -6,7 +6,7 @@ This folder is the durable working memory for the project. It should contain eno
 
 ## Project
 
-ChatGPT Markdown Exporter is a privacy-first Chrome Manifest V3 extension that exports the currently opened ChatGPT conversation into a user-selected local folder.
+ChatCargo is a privacy-first Chrome Manifest V3 extension that exports the currently opened ChatGPT conversation into a user-selected local folder.
 
 The export folder contains:
 

@@ -1,6 +1,6 @@
-# ChatGPT Markdown Exporter
+![ChatCargo](docs/image/ChatCargo.png)
 
-ChatGPT Markdown Exporter is a privacy-first Chrome Manifest V3 extension for exporting the currently opened ChatGPT conversation into a local Markdown archive.
+ChatCargo is a privacy-first Chrome Manifest V3 extension for exporting the currently opened ChatGPT conversation into a local Markdown archive.
 
 The project exists because external browser automation is fragile for ChatGPT export: authenticated sessions, 2FA, bot detection, and cookie transfer make Playwright-style crawling unreliable. This extension runs inside the user's real Chrome session and extracts the already-rendered conversation DOM.
 

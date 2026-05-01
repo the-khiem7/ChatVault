@@ -2,10 +2,20 @@
   "manifest_version": 3,
   "name": "ChatCargo",
   "description": "Export the current ChatGPT conversation into a local Markdown archive.",
-  "version": "0.6.0",
+  "version": "0.6.1",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "action": {
     "default_popup": "src/popup/popup.html",
-    "default_title": "ChatCargo"
+    "default_title": "ChatCargo",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
   },
   "background": {
     "service_worker": "src/serviceWorker.js",

@@ -98,6 +98,14 @@ These checks protect the project architecture from drifting back into a mixed ru
 
 ### Milestone 6
 
+- Pull requests run `npm test -- --run`, `npm run typecheck`, `npm run build`, and `npm run verify:extension`.
+- Main branch pushes run the same validation gates.
+- A release tag such as `v0.6.0` or `0.6.0` triggers artifact packaging and GitHub Release publication.
+- Release artifact and checksum are attached to the release.
+- Release job fails when package and manifest versions do not match the tag.
+
+### Milestone 7
+
 - Unsupported pages show a clear error.
 - DOM extraction fallback paths are exercised.
 - Service worker restart or popup close does not produce silent bad output.

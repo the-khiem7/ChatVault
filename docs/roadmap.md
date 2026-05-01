@@ -11,22 +11,18 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.5.6` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.6.0` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
+- Milestone 6 CI/CD and GitHub Release automation is implemented.
 
 ## Next Action
 
-Manually validate Milestone 5 Folder Export in Chrome:
+Implement Milestone 7 Robustness after Milestone 6 CI/CD completion:
 
-- let the user choose an export folder before exporting
-- use a dedicated `Choose Folder` control and also prompt for a folder if export starts without one
-- keep the selected folder only for the current popup/session in MVP
-- build a folder export artifact with `conversation.md` and resolved asset bytes
-- write `<slug>/conversation.md`
-- write resolved assets under `<slug>/assets/`
-- validate written asset paths against Markdown references
-- show a clear unsupported-browser state when File System Access API is unavailable
-- allow partial asset failures to export Markdown with remote fallback warnings
+- lock down layered selectors and validation warnings for DOM extraction drift
+- add retry and progress affordances for popup/service-worker lifecycle issues
+- validate popup close and service worker restart scenarios under export load
+- keep user-visible warning and retry states explicit for partial failures
 
 Milestone 1 acceptance check is implemented and ready for manual Chrome validation:
 
@@ -215,7 +211,35 @@ Relevant docs:
 - [architecture.md](architecture.md)
 - [data-contracts.md](data-contracts.md)
 
-### Milestone 6: Robustness
+### Milestone 6: CI/CD and GitHub Release
+
+Status: Implemented
+
+Deliverables:
+
+- GitHub Actions workflow for pull requests and main branch checks
+- required gates for `npm test -- --run`, `npm run typecheck`, `npm run build`, and `npm run verify:extension`
+- release packaging step that produces the extension bundle artifact
+- versioned release tagging based on [versioning.md](versioning.md)
+- GitHub Release publication with attached extension archive and checksum file
+- release notes generation from the tagged version and milestone scope
+- failure reporting that blocks release publication when validation or bundle checks fail
+
+Acceptance:
+
+- Pull requests run the extension checks automatically.
+- Main branch changes are validated by the same build/test gates.
+- A tag such as `v0.6.0` or `0.6.0` produces a GitHub Release.
+- The release includes the built extension artifact ready for manual install or distribution.
+- Release version matches `package.json`, `manifest.json`, and `package-lock.json`.
+
+Relevant docs:
+
+- [versioning.md](versioning.md)
+- [testing-validation.md](testing-validation.md)
+- [architecture.md](architecture.md)
+
+### Milestone 7: Robustness
 
 Status: Not started
 
@@ -326,3 +350,6 @@ MVP is complete when:
 - Updated active Milestone 5 patch version to `0.5.5`.
 - Implemented Milestone 5 Patch 6 to rename product branding to ChatCargo across extension metadata, popup title, and project documentation.
 - Updated active Milestone 5 patch version to `0.5.6`.
+- Swapped milestone order so CI/CD and GitHub Release is Milestone 6 and Robustness is Milestone 7.
+- Started Milestone 6 at version `0.6.0`.
+- Implemented Milestone 6 CI/CD and release automation with GitHub Actions validation and tagged release publication.

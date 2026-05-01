@@ -1,0 +1,91 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+      - "*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate and build
+        run: |
+          npm test -- --run
+          npm run typecheck
+          npm run build
+          npm run verify:extension
+
+      - name: Resolve release metadata
+        id: meta
+        shell: bash
+        run: |
+          RAW_TAG="${GITHUB_REF_NAME}"
+          VERSION_FROM_TAG="${RAW_TAG#v}"
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          MANIFEST_VERSION="$(node -p "require('./manifest.json').version")"
+
+          if [ "${VERSION_FROM_TAG}" != "${PACKAGE_VERSION}" ]; then
+            echo "Tag version (${VERSION_FROM_TAG}) does not match package.json version (${PACKAGE_VERSION})."
+            exit 1
+          fi
+
+          if [ "${VERSION_FROM_TAG}" != "${MANIFEST_VERSION}" ]; then
+            echo "Tag version (${VERSION_FROM_TAG}) does not match manifest.json version (${MANIFEST_VERSION})."
+            exit 1
+          fi
+
+          MILESTONE="$(echo "${VERSION_FROM_TAG}" | cut -d. -f2)"
+          ARCHIVE_NAME="chatcargo-extension-${VERSION_FROM_TAG}.zip"
+          CHECKSUM_NAME="chatcargo-extension-${VERSION_FROM_TAG}.sha256"
+
+          echo "version=${VERSION_FROM_TAG}" >> "${GITHUB_OUTPUT}"
+          echo "milestone=${MILESTONE}" >> "${GITHUB_OUTPUT}"
+          echo "archive=${ARCHIVE_NAME}" >> "${GITHUB_OUTPUT}"
+          echo "checksum=${CHECKSUM_NAME}" >> "${GITHUB_OUTPUT}"
+
+      - name: Package extension artifact
+        shell: bash
+        run: |
+          cd dist
+          zip -r "../${{ steps.meta.outputs.archive }}" .
+
+      - name: Generate checksum
+        shell: bash
+        run: |
+          sha256sum "${{ steps.meta.outputs.archive }}" > "${{ steps.meta.outputs.checksum }}"
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ steps.meta.outputs.version }}
+          generate_release_notes: true
+          body: |
+            Milestone: ${{ steps.meta.outputs.milestone }}
+            Automated gates passed:
+            - npm test -- --run
+            - npm run typecheck
+            - npm run build
+            - npm run verify:extension
+          files: |
+            ${{ steps.meta.outputs.archive }}
+            ${{ steps.meta.outputs.checksum }}

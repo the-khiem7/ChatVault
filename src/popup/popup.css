@@ -133,7 +133,7 @@ button:disabled {
 .progress-panel {
   display: grid;
   gap: 7px;
-  margin: 0 16px;
+  margin: 0 16px 16px;
   border: 1px solid #d9e2ec;
   border-radius: 6px;
   background: #f8fafc;

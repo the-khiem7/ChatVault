@@ -9,7 +9,7 @@ export function writeMarkdown(draft: ConversationDraft, options: MarkdownWriterO
   const lines = [
     "---",
     `title: "${escapeYamlString(draft.title)}"`,
-    'source: "chatgpt"',
+    `source: "${draft.source || "unknown"}"`,
     `sourceUrl: "${escapeYamlString(draft.sourceUrl)}"`,
     `exportedAt: "${escapeYamlString(draft.extractedAt)}"`,
     "---",

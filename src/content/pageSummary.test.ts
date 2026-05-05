@@ -18,6 +18,6 @@ describe("extractPageSummary", () => {
 
     const summary = extractPageSummary(document, new URL("https://chat.openai.com/c/abc"));
 
-    expect(summary.title).toBe("Untitled ChatGPT Conversation");
+    expect(summary.title).toBe("Untitled AI Chat Conversation");
   });
 });

@@ -7,6 +7,7 @@ describe("buildFolderExportArtifact", () => {
   it("builds a folder artifact with conversation markdown and resolved asset files", () => {
     const draft: ConversationDraft = {
       title: "Image Export - ChatGPT",
+      source: "chatgpt",
       sourceUrl: "https://chatgpt.com/c/images",
       extractedAt: "2026-05-01T01:00:00.000Z",
       assetCandidates: [],

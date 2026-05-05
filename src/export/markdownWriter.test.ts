@@ -6,6 +6,7 @@ describe("writeMarkdown", () => {
   it("writes frontmatter and ordered H1 role sections", () => {
     const draft: ConversationDraft = {
       title: "Data Analysis - ChatGPT",
+      source: "chatgpt",
       sourceUrl: "https://chatgpt.com/c/abc",
       extractedAt: "2026-04-30T13:00:00.000Z",
       assetCandidates: [],
@@ -52,6 +53,7 @@ Hi user
   it("writes fenced code blocks with language tags", () => {
     const draft: ConversationDraft = {
       title: "SQL Help",
+      source: "chatgpt",
       sourceUrl: "https://chatgpt.com/c/sql",
       extractedAt: "2026-04-30T13:00:00.000Z",
       assetCandidates: [],
@@ -88,6 +90,7 @@ LIMIT 10;
   it("converts SQL-like paragraph lines into fenced SQL blocks without rewriting SQL text", () => {
     const draft: ConversationDraft = {
       title: "SQL Inline",
+      source: "chatgpt",
       sourceUrl: "https://chatgpt.com/c/sql-inline",
       extractedAt: "2026-04-30T13:00:00.000Z",
       assetCandidates: [],
@@ -122,6 +125,7 @@ Sau đó xem rows.`);
   it("detects SQL inside unlabeled code blocks without rewriting SQL identifiers", () => {
     const draft: ConversationDraft = {
       title: "SQL Code",
+      source: "chatgpt",
       sourceUrl: "https://chatgpt.com/c/sql-code",
       extractedAt: "2026-04-30T13:00:00.000Z",
       assetCandidates: [],
@@ -153,6 +157,7 @@ CREATE EXTERNAL TABLE taxi_data_schema.yellow_taxi_trips (...)STORED AS PARQUETL
   it("writes local image paths when resolved assets are available", () => {
     const draft: ConversationDraft = {
       title: "Image Export",
+      source: "chatgpt",
       sourceUrl: "https://chatgpt.com/c/images",
       extractedAt: "2026-04-30T13:00:00.000Z",
       warnings: [],
@@ -198,6 +203,7 @@ CREATE EXTERNAL TABLE taxi_data_schema.yellow_taxi_trips (...)STORED AS PARQUETL
   it("keeps remote image links when no local asset reference is available", () => {
     const draft: ConversationDraft = {
       title: "Image Fallback",
+      source: "chatgpt",
       sourceUrl: "https://chatgpt.com/c/images",
       extractedAt: "2026-04-30T13:00:00.000Z",
       warnings: [],

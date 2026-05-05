@@ -4,6 +4,8 @@ export type DetectionConfidence = "high" | "medium" | "low";
 
 export type MessageRole = "user" | "assistant" | "system" | "unknown";
 
+export type Platform = "chatgpt" | "gemini" | "unknown";
+
 export type ParagraphBlock = {
   id: string;
   kind: "paragraph";
@@ -66,6 +68,7 @@ export type ConversationDiagnostics = {
 
 export type ConversationDraft = {
   title: string;
+  source: Platform;
   sourceUrl: string;
   extractedAt: string;
   messages: ChatMessageDraft[];

@@ -1,9 +1,10 @@
 import type { PageSummary, RuntimeRequest, RuntimeResponse } from "../runtime/messages";
 import type { ConversationDraft } from "../domain/conversation";
 import { extractConversation } from "./extractors/extractConversation";
+import { extractGeminiConversation } from "./extractors/extractGeminiConversation";
+import { getPlatformFromHostname } from "../shared/constants";
 
-const FALLBACK_CONVERSATION_TITLE = "Untitled ChatGPT Conversation";
-const LISTENER_FLAG = "__chatGptMarkdownExporterContentListener";
+const LISTENER_FLAG = "__chatCargoContentListener";
 
 declare global {
   interface Window {
@@ -12,10 +13,20 @@ declare global {
 }
 
 function extractCurrentPageSummary(): PageSummary {
+  const platform = getPlatformFromHostname(window.location.hostname);
+  const defaultTitle = platform === "gemini" ? "Untitled Gemini Conversation" : "Untitled ChatGPT Conversation";
   return {
-    title: document.title.trim() || FALLBACK_CONVERSATION_TITLE,
+    title: document.title.trim() || defaultTitle,
     url: window.location.href
   };
+}
+
+function extractCurrentConversation(): ConversationDraft {
+  const platform = getPlatformFromHostname(window.location.hostname);
+  if (platform === "gemini") {
+    return extractGeminiConversation(document, window.location);
+  }
+  return extractConversation(document, window.location);
 }
 
 if (!window[LISTENER_FLAG]) {
@@ -34,7 +45,7 @@ if (!window[LISTENER_FLAG]) {
 
         sendResponse({
           ok: true,
-          data: extractConversation(document, window.location),
+          data: extractCurrentConversation(),
           warnings: []
         });
         return false;

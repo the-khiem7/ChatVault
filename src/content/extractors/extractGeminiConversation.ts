@@ -15,15 +15,18 @@ type MessageCandidate = {
   confidence: DetectionConfidence;
 };
 
-const FALLBACK_CONVERSATION_TITLE = "Untitled ChatGPT Conversation";
+const FALLBACK_CONVERSATION_TITLE = "Untitled Gemini Conversation";
 
 const MESSAGE_SELECTOR = [
-  "article[data-testid^='conversation-turn']",
-  "article[data-message-author-role]",
-  "[data-message-author-role]"
+  "[data-message-id]",
+  "[data-role]",
+  ".conversation-turn",
+  "message-content",
+  "model-response",
+  "user-query"
 ].join(",");
 
-export function extractConversation(documentRef: Document, locationRef: Location | URL): ConversationDraft {
+export function extractGeminiConversation(documentRef: Document, locationRef: Location | URL): ConversationDraft {
   const assetCandidates: AssetCandidate[] = [];
   const messageCandidates = findMessageCandidates(documentRef);
   const messages = mergeAdjacentSameRoleMessages(
@@ -38,13 +41,13 @@ export function extractConversation(documentRef: Document, locationRef: Location
       id: "warning-no-conversation-found",
       code: "NO_CONVERSATION_FOUND",
       severity: "error",
-      message: "Could not detect any ChatGPT conversation messages on this page."
+      message: "Could not detect any Gemini conversation messages on this page."
     });
   }
 
   return {
     title: documentRef.title.trim() || FALLBACK_CONVERSATION_TITLE,
-    source: "chatgpt" as Platform,
+    source: "gemini" as Platform,
     sourceUrl: locationRef.href,
     extractedAt: new Date().toISOString(),
     messages,
@@ -114,20 +117,23 @@ function uniqueRootElements(elements: NodeListOf<Element>): Element[] {
 }
 
 function detectRole(element: Element, index: number): { role: MessageRole; confidence: DetectionConfidence } {
-  const roleElement = element.matches("[data-message-author-role]")
-    ? element
-    : element.querySelector("[data-message-author-role]");
-  const explicitRole = roleElement?.getAttribute("data-message-author-role")?.toLowerCase();
-
-  if (explicitRole === "user" || explicitRole === "assistant" || explicitRole === "system") {
-    return { role: explicitRole, confidence: "high" };
+  const roleAttribute = element.getAttribute("data-role")?.toLowerCase();
+  if (roleAttribute === "user") {
+    return { role: "user", confidence: "high" };
+  }
+  if (roleAttribute === "assistant" || roleAttribute === "model") {
+    return { role: "assistant", confidence: "high" };
   }
 
-  const testId = element.getAttribute("data-testid")?.toLowerCase() ?? "";
-  if (testId.includes("user")) {
+  const dataMessageId = element.getAttribute("data-message-id");
+  if (dataMessageId) {
+    return { role: index % 2 === 0 ? "user" : "assistant", confidence: "medium" };
+  }
+
+  if (element.matches(".user-query, [data-user]")) {
     return { role: "user", confidence: "medium" };
   }
-  if (testId.includes("assistant")) {
+  if (element.matches(".model-response, [data-model]")) {
     return { role: "assistant", confidence: "medium" };
   }
 
@@ -166,9 +172,9 @@ function extractBlocks(element: Element, messageId: string, assetCandidates: Ass
     disposable.remove();
   }
 
-  const codeBlocks = Array.from(clone.querySelectorAll("pre")).map((pre, index) => {
-    const marker = `\n\n__CHATGPT_EXPORT_CODE_BLOCK_${index}__\n\n`;
-    const codeElement = pre.querySelector("code");
+  const codeBlocks = Array.from(clone.querySelectorAll("pre, code")).map((pre, index) => {
+    const marker = `\n\n__GEMINI_EXPORT_CODE_BLOCK_${index}__\n\n`;
+    const codeElement = pre.tagName === "CODE" ? pre : pre.querySelector("code");
     const text = (codeElement?.textContent ?? pre.textContent ?? "").trim();
     const language = detectCodeLanguage(pre, codeElement);
     pre.textContent = marker;
@@ -177,7 +183,7 @@ function extractBlocks(element: Element, messageId: string, assetCandidates: Ass
 
   const imageBlocks = Array.from(clone.querySelectorAll("img[src]")).map((image) => {
     const assetId = `asset-${assetCandidates.length + 1}`;
-    const marker = `\n\n__CHATGPT_EXPORT_IMAGE_BLOCK_${assetId}__\n\n`;
+    const marker = `\n\n__GEMINI_EXPORT_IMAGE_BLOCK_${assetId}__\n\n`;
     const sourceUrl = image.getAttribute("src") ?? "";
     const altText = image.getAttribute("alt")?.trim() || undefined;
     const candidate: AssetCandidate = {
@@ -197,7 +203,7 @@ function extractBlocks(element: Element, messageId: string, assetCandidates: Ass
 
   const htmlElement = clone as HTMLElement;
   const visibleText = (htmlElement.innerText ?? clone.textContent ?? "").trim().replace(/\n{3,}/g, "\n\n");
-  const markerPattern = /__CHATGPT_EXPORT_(CODE|IMAGE)_BLOCK_([A-Za-z0-9_-]+)__/g;
+  const markerPattern = /__GEMINI_EXPORT_(CODE|IMAGE)_BLOCK_([A-Za-z0-9_-]+)__/g;
   const blocks: ContentBlockDraft[] = [];
   let cursor = 0;
   let match: RegExpExecArray | null;

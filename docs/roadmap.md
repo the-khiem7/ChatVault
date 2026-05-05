@@ -274,18 +274,18 @@ Relevant docs:
 
 ### Milestone 8: Gemini Support
 
-Status: Not started
+Status: Implemented - Ready for Manual Validation
 
 Deliverables:
 
-- Add `https://gemini.google.com/*` to manifest host_permissions
-- Create `extractGeminiConversation.ts` extractor
-- Update content script to detect platform and route to appropriate extractor
-- Update `src/shared/constants.ts` with Gemini hosts
-- Update markdown writer to handle dynamic `source` field (chatgpt vs gemini)
-- Add unit tests for Gemini extractor
-- Update popup status messages to be platform-agnostic
-- Manual validation on Gemini web app
+- ✅ Add `https://gemini.google.com/*` to manifest host_permissions
+- ✅ Create `extractGeminiConversation.ts` extractor
+- ✅ Update content script to detect platform and route to appropriate extractor
+- ✅ Update `src/shared/constants.ts` with Gemini hosts
+- ✅ Update markdown writer to handle dynamic `source` field (chatgpt vs gemini)
+- ✅ Add unit tests for Gemini extractor
+- ✅ Update popup status messages to be platform-agnostic
+- ⏳ Manual validation on Gemini web app
 
 Acceptance:
 
@@ -325,15 +325,27 @@ MVP is complete when:
 
 - Updated documentation to support Gemini platform.
 - Updated `docs/README.md`: Added Gemini to project description.
-- Updated `docs/product-requirements.md`: Added Gemini to target platform, updated product goal.
+- Updated `docs/product-requirements.md`: Added Gemini to target platform.
 - Updated `docs/architecture.md`: Made content script platform-agnostic, added Gemini to manifest boundary.
 - Updated `docs/roadmap.md`: Added Milestone 8 for Gemini support, updated current state and active scope.
 - Updated `docs/extraction-strategy.md`: Made platform-agnostic, added Gemini extractor reference.
-- Updated `docs/data-contracts.md`: Made `source` field dynamic for multiple platforms.
+- Updated `docs/data-contract-s.md`: Made `source` field dynamic for multiple platforms.
 - Updated `docs/privacy-security.md`: Added Gemini to runtime trust boundary and permission boundary.
 - Updated `docs/risks.md`: Updated DOM change risk to include Gemini, updated scope expansion risk.
 - Updated `docs/decisions.md`: Added ADR-011 for Gemini support.
 - Updated `docs/testing-validation.md`: Added Gemini to manual QA conversations.
+- Started Milestone 8 implementation at version `0.8.0`.
+- Updated `manifest.json`: Added Gemini host permissions and content script matches.
+- Updated `src/shared/constants.ts`: Added `SUPPORTED_GEMINI_HOSTS` and `getPlatformFromHostname()`.
+- Created `src/content/extractors/extractGeminiConversation.ts`: Basic Gemini extractor structure.
+- Updated `src/content/content.ts`: Platform detection and routing to appropriate extractor.
+- Updated `src/domain/conversation.ts`: Added `Platform` type and `source` field to `ConversationDraft`.
+- Updated `src/export/markdownWriter.ts`: Dynamic source field in frontmatter.
+- Updated `src/runtime/urlSupport.ts`: Added `isSupportedGeminiUrl()` and `isSupportedUrl()`.
+- Updated `package.json` and `package-lock.json`: Version bumped to `0.8.0`.
+- Added `src/content/extractors/extractGeminiConversation.test.ts`: Basic unit tests.
+- Fixed all typecheck errors and verified build passes.
+- All 38 tests pass including 3 new Gemini extractor tests.
 
 ### 2026-04-30
 

@@ -1,10 +1,10 @@
 # Product Requirements
 
-Updated: 2026-05-01
+Updated: 2026-05-05
 
 ## Product Goal
 
-Build a Chrome Manifest V3 extension that exports the currently opened ChatGPT conversation into a portable local Markdown folder with assets.
+Build a Chrome Manifest V3 extension that exports the currently opened AI chat conversation (ChatGPT, Gemini) into a portable local Markdown folder with assets.
 
 This is a lossless exporter, not a summarizer or note generator.
 
@@ -87,16 +87,14 @@ Initial target:
 
 - Desktop Chrome
 - Chrome Manifest V3
-- ChatGPT web app
-- `https://chatgpt.com/*`
-- `https://chat.openai.com/*`
+- ChatGPT web app (`https://chatgpt.com/*`, `https://chat.openai.com/*`)
+- Gemini web app (`https://gemini.google.com/*`)
 
 Possible future targets:
 
 - Firefox WebExtension
 - Claude
 - Perplexity
-- Gemini
 - Poe
 
 ## User Flow

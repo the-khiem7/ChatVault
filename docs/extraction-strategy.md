@@ -1,12 +1,18 @@
 # Extraction Strategy
 
-Updated: 2026-04-30
+Updated: 2026-05-05
 
 ## Principle
 
-Extract what is already rendered in the user's real ChatGPT page. Do not call external APIs and do not automate login.
+Extract what is already rendered in the user's real AI chat page (ChatGPT, Gemini). Do not call external APIs and do not automate login.
 
 Extraction is a content-script responsibility. Archive generation, asset fetching, and download orchestration belong outside the extractor.
+
+Each supported platform has its own extractor module:
+- `extractConversation.ts` - ChatGPT extractor
+- `extractGeminiConversation.ts` - Gemini extractor
+
+The content script detects the current platform and routes to the appropriate extractor.
 
 ## Extractor Output
 
@@ -25,7 +31,7 @@ It must not return raw DOM nodes or runtime-specific objects.
 
 Do not depend on a single fragile selector such as `div:nth-child(4)`.
 
-Use a strategy list:
+Each platform extractor should define its own strategy list. Example for ChatGPT:
 
 ```ts
 const messageContainerStrategies = [
@@ -52,7 +58,7 @@ Each strategy should return structured candidates and confidence, not just raw n
 Role detection should use layered signals:
 
 - explicit labels such as user/assistant
-- known ChatGPT DOM structure
+- known platform DOM structure (ChatGPT, Gemini)
 - position and repeated turn layout
 - fallback heuristics
 
@@ -61,6 +67,8 @@ If role cannot be detected reliably:
 - set role to `unknown`
 - set confidence to `low`
 - emit `LOW_CONFIDENCE_ROLE`
+
+Note: Gemini may use different role labels or DOM attributes than ChatGPT. Each platform extractor should handle its own role detection.
 
 ## Block Extraction Rules
 

@@ -115,6 +115,7 @@ These checks protect the project architecture from drifting back into a mixed ru
 
 Maintain test conversations covering:
 
+### ChatGPT
 - plain text only
 - long multi-turn conversation
 - TypeScript code blocks
@@ -125,6 +126,15 @@ Maintain test conversations covering:
 - math text or LaTeX
 - attachment-like link
 - failed or blocked image URL
+
+### Gemini
+- plain text only
+- long multi-turn conversation
+- code blocks (language detection)
+- nested bullet and numbered lists
+- uploaded image
+- generated image
+- math text or LaTeX
 
 ## Media Extraction Diagnostic Script
 

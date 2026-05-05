@@ -1,20 +1,21 @@
 # Risks
 
-Updated: 2026-05-01
+Updated: 2026-05-05
 
-## ChatGPT DOM Changes
+## AI Chat DOM Changes
 
 Risk:
 
-ChatGPT markup can change without notice, breaking selectors.
+ChatGPT and Gemini markup can change without notice, breaking selectors.
 
 Mitigation:
 
-- use layered extraction strategies
-- keep selectors isolated in `src/content/`
+- use layered extraction strategies per platform
+- keep selectors isolated in platform-specific extractors under `src/content/extractors/`
 - add fallback visible text extraction
 - report warnings when confidence is low
 - use the media extraction diagnostic script in [testing-validation.md](testing-validation.md) before changing image selectors
+- maintain separate extractors for each platform to isolate DOM drift impact
 
 ## Runtime Boundary Drift
 
@@ -99,10 +100,11 @@ Mitigation:
 
 Risk:
 
-Bulk export, cloud sync, RAG, and multi-platform support can distract from the MVP.
+Bulk export, cloud sync, RAG, and additional platform support (Claude, Perplexity, etc.) can distract from core stability.
 
 Mitigation:
 
-- keep MVP limited to current ChatGPT conversation export
-- track future ideas outside the active roadmap
+- keep MVP focused on ChatGPT and Gemini conversation export
+- track future platform ideas outside the active roadmap
 - do not implement non-goals without updating product requirements
+- add platforms one at a time with dedicated milestones and validation

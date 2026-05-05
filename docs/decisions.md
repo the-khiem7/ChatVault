@@ -208,3 +208,29 @@ Consequences:
 - service worker remains the orchestrator, while popup or an offscreen/document context owns folder selection and file writing
 - validation must ensure written files match Markdown references
 - unsupported browsers must show a clear fallback or unsupported-browser state
+
+## ADR-011: Add Gemini as Supported Platform
+
+Status: Accepted
+
+Context:
+
+ChatCargo MVP initially targeted only ChatGPT. Gemini is a popular AI chat platform with similar export use cases (Obsidian, Git repos, local archives). Users want to export Gemini conversations with the same lossless preservation.
+
+Decision:
+
+Add Gemini (`https://gemini.google.com/*`) as a supported platform in Milestone 8.
+
+Implementation approach:
+- Create platform-specific extractors (`extractConversation.ts` for ChatGPT, `extractGeminiConversation.ts` for Gemini)
+- Content script detects platform by `window.location.hostname` and routes to appropriate extractor
+- Update `source` field in markdown output to be dynamic ("chatgpt" vs "gemini")
+- Add Gemini hosts to manifest `host_permissions`
+- Update constants to include `SUPPORTED_GEMINI_HOSTS`
+
+Consequences:
+- users can export both ChatGPT and Gemini conversations
+- codebase supports multiple platforms without major architecture changes
+- each platform extractor can evolve independently as DOM changes
+- testing must cover both platforms
+- popup UI becomes platform-agnostic

@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated: 2026-05-01
+Updated: 2026-05-05
 
 This is the primary resume file for the project. Keep it current enough that work can continue without reading prior chat history.
 
@@ -12,12 +12,21 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
 - Active version is `0.6.3` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
-- MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
+- MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT/Gemini conversation.
 - Milestone 6 CI/CD and GitHub Release automation is implemented.
 
 ## Next Action
 
-Implement Milestone 7 Robustness after Milestone 6 CI/CD completion:
+Implement Gemini support (Milestone 8):
+
+- Add Gemini host permissions to manifest
+- Create Gemini-specific DOM extractor
+- Update content script to detect platform and route to appropriate extractor
+- Update markdown writer to handle dynamic source field
+- Add unit tests for Gemini extractor
+- Manual validation on Gemini web app
+
+Then implement Milestone 7 Robustness:
 
 - lock down layered selectors and validation warnings for DOM extraction drift
 - add retry and progress affordances for popup/service-worker lifecycle issues
@@ -35,7 +44,7 @@ Click popup button
 
 ## Active Scope
 
-Build a Chrome Extension that exports the currently opened ChatGPT conversation into a user-selected local folder containing:
+Build a Chrome Extension that exports the currently opened AI chat conversation (ChatGPT, Gemini) into a user-selected local folder containing:
 
 ```txt
 <slug>/conversation.md
@@ -45,7 +54,7 @@ Build a Chrome Extension that exports the currently opened ChatGPT conversation 
 The extension must:
 
 - Use the user's real authenticated browser session.
-- Extract rendered DOM from the current ChatGPT page.
+- Extract rendered DOM from the current ChatGPT/Gemini page.
 - Keep DOM extraction separate from export/download orchestration.
 - Preserve message order and roles.
 - Preserve content as originally written as much as possible.
@@ -263,6 +272,37 @@ Relevant docs:
 - [risks.md](risks.md)
 - [testing-validation.md](testing-validation.md)
 
+### Milestone 8: Gemini Support
+
+Status: Not started
+
+Deliverables:
+
+- Add `https://gemini.google.com/*` to manifest host_permissions
+- Create `extractGeminiConversation.ts` extractor
+- Update content script to detect platform and route to appropriate extractor
+- Update `src/shared/constants.ts` with Gemini hosts
+- Update markdown writer to handle dynamic `source` field (chatgpt vs gemini)
+- Add unit tests for Gemini extractor
+- Update popup status messages to be platform-agnostic
+- Manual validation on Gemini web app
+
+Acceptance:
+
+- User opens a Gemini conversation.
+- User clicks the extension icon.
+- Extension detects Gemini platform automatically.
+- Extension exports the conversation as Markdown with assets.
+- Extracted content preserves message order, roles, code blocks, and images.
+- Output folder structure matches the established contract.
+
+Relevant docs:
+
+- [product-requirements.md](product-requirements.md)
+- [extraction-strategy.md](extraction-strategy.md)
+- [data-contracts.md](data-contracts.md)
+- [architecture.md](architecture.md)
+
 ## Completion Definition
 
 MVP is complete when:
@@ -280,6 +320,20 @@ MVP is complete when:
 - Architecture boundaries in [architecture.md](architecture.md) are respected.
 
 ## Progress Log
+
+### 2026-05-05
+
+- Updated documentation to support Gemini platform.
+- Updated `docs/README.md`: Added Gemini to project description.
+- Updated `docs/product-requirements.md`: Added Gemini to target platform, updated product goal.
+- Updated `docs/architecture.md`: Made content script platform-agnostic, added Gemini to manifest boundary.
+- Updated `docs/roadmap.md`: Added Milestone 8 for Gemini support, updated current state and active scope.
+- Updated `docs/extraction-strategy.md`: Made platform-agnostic, added Gemini extractor reference.
+- Updated `docs/data-contracts.md`: Made `source` field dynamic for multiple platforms.
+- Updated `docs/privacy-security.md`: Added Gemini to runtime trust boundary and permission boundary.
+- Updated `docs/risks.md`: Updated DOM change risk to include Gemini, updated scope expansion risk.
+- Updated `docs/decisions.md`: Added ADR-011 for Gemini support.
+- Updated `docs/testing-validation.md`: Added Gemini to manual QA conversations.
 
 ### 2026-04-30
 

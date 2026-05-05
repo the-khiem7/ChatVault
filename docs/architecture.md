@@ -1,6 +1,6 @@
 # Architecture
 
-Updated: 2026-05-01
+Updated: 2026-05-05
 
 This document is the project architecture source of truth. The original planning brief has been incorporated into the docs; this file records the evaluated architecture that implementation should follow.
 
@@ -9,7 +9,7 @@ This document is the project architecture source of truth. The original planning
 Build a Chrome Manifest V3 extension with a runtime-first design:
 
 - Popup owns UI state and user interaction only.
-- Content script owns ChatGPT DOM inspection only.
+- Content script owns AI chat platform DOM inspection only (ChatGPT, Gemini, etc.).
 - Service worker owns extension orchestration, tab validation, Chrome API calls, and download handoff.
 - Pure project modules own Markdown writing, folder export modeling, validation, slugging, and asset naming.
 - Offscreen document is optional and introduced only if folder writing needs a document context that must outlive the popup.
@@ -69,20 +69,21 @@ Rules:
 
 Role:
 
-- run on supported ChatGPT pages
+- run on supported AI chat pages (ChatGPT, Gemini)
 - read rendered DOM
 - detect title, messages, roles, blocks, and visible asset references
 - return a structured extraction result
+- use platform-specific extractors based on detected host
 
 Rules:
 
 - Do not call `chrome.downloads`.
 - Do not write final export files.
 - Do not fetch arbitrary remote assets.
-- Do not depend on one selector.
+- Do not depend on one selector per platform.
 - Preserve unknown visible content instead of silently dropping it.
 
-Content scripts run in an isolated world. They can read the page DOM, but they do not share JavaScript variables with the ChatGPT page. If future extraction requires page runtime objects, add an explicit page-bridge design and decision record before implementing it.
+Content scripts run in an isolated world. They can read the page DOM, but they do not share JavaScript variables with the page. If future extraction requires page runtime objects, add an explicit page-bridge design and decision record before implementing it.
 
 ### Service Worker
 
@@ -276,7 +277,8 @@ Baseline permissions:
   "permissions": ["activeTab", "scripting", "downloads"],
   "host_permissions": [
     "https://chatgpt.com/*",
-    "https://chat.openai.com/*"
+    "https://chat.openai.com/*",
+    "https://gemini.google.com/*"
   ]
 }
 ```

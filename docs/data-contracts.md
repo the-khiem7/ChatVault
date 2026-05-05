@@ -226,7 +226,7 @@ export type FolderExportManifest = {
 ```md
 ---
 title: "{conversation title}"
-source: "chatgpt"
+source: "{platform}"
 sourceUrl: "{current url}"
 exportedAt: "{ISO datetime}"
 ---
@@ -243,6 +243,10 @@ exportedAt: "{ISO datetime}"
 
 ![image](assets/001.png)
 ```
+
+Rules:
+- `source` must be the detected platform: `"chatgpt"`, `"gemini"`, or `"unknown"`.
+- Source is determined by parsing the `sourceUrl` hostname against supported hosts.
 
 Rules:
 

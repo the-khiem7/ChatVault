@@ -1,12 +1,12 @@
 # Project Documentation
 
-Updated: 2026-05-01
+Updated: 2026-05-05
 
 This folder is the durable working memory for the project. It should contain enough context for a developer or agent to resume work without relying on previous chat history.
 
 ## Project
 
-ChatCargo is a privacy-first Chrome Manifest V3 extension that exports the currently opened ChatGPT conversation into a user-selected local folder.
+ChatCargo is a privacy-first Chrome Manifest V3 extension that exports the currently opened AI chat conversation (ChatGPT, Gemini) into a user-selected local folder.
 
 The export folder contains:
 

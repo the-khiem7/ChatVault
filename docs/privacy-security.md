@@ -18,9 +18,9 @@ Rules:
 
 ## Runtime Trust Boundary
 
-Treat the ChatGPT page as readable but not trusted input.
+Treat AI chat pages as readable but not trusted input.
 
-The extension may read visible DOM content from supported ChatGPT hosts, but it must not allow the page to control privileged extension behavior.
+The extension may read visible DOM content from supported hosts (ChatGPT, Gemini), but it must not allow the page to control privileged extension behavior.
 
 Rules:
 
@@ -39,7 +39,8 @@ Baseline permissions:
   "permissions": ["activeTab", "scripting", "downloads"],
   "host_permissions": [
     "https://chatgpt.com/*",
-    "https://chat.openai.com/*"
+    "https://chat.openai.com/*",
+    "https://gemini.google.com/*"
   ]
 }
 ```

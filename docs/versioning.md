@@ -1,6 +1,6 @@
 # Versioning
 
-Updated: 2026-04-30
+Updated: 2026-05-15
 
 Use milestone-based pre-1.0 versions:
 
@@ -35,5 +35,5 @@ Milestone 3 fourth patch:    0.3.4
 Current version:
 
 ```txt
-0.6.3
+0.6.4
 ```

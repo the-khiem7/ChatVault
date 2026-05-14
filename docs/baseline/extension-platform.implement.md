@@ -60,7 +60,7 @@ Suggested output artifact:
 
 ## Slice 1: Contract First Scaffold
 
-Status: Ready
+Status: Implemented
 
 Goal:
 
@@ -98,6 +98,12 @@ Deliverable:
 
 - new contract/type files
 - zero or minimal runtime behavior change
+- implemented files:
+  - `src/core/contracts.ts`
+  - `src/platform/browser/contracts.ts`
+  - `src/platform/provider/contracts.ts`
+  - `src/app/contracts/legacyAdapters.ts`
+  - `src/app/contracts/legacyAdapters.test.ts`
 
 ## Slice 2: Browser Layer Extraction
 
@@ -304,4 +310,4 @@ After each slice:
 
 ## Immediate Next Step
 
-Implement Slice 1 by creating the exact contract/type files and adding temporary adapters from current runtime/export shapes to normalized contracts.
+Implement Slice 2 by routing the current Chrome folder-export path through `BrowserCapabilities` and `SaveStrategy`, while keeping existing popup/service-worker behavior unchanged.

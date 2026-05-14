@@ -44,6 +44,7 @@ In Progress
 - Consolidated accepted architecture decisions into primary docs: `docs/architecture.md`, `docs/data-contracts.md`, `docs/roadmap.md`, `docs/product-requirements.md`, `docs/decisions.md`.
 - Created durable baseline pack under `docs/baseline/extension-platform.*`.
 - Closed previously noted Firefox/platform risks in decision history.
+- Implemented Slice 1 contract scaffold in code: browser/provider/core contract modules and legacy normalization adapters.
 
 Evidence:
 
@@ -61,10 +62,12 @@ Evidence:
 - Verification:
   - doc sync against current `src/` layout
   - code graph architecture snapshot reviewed for current structure
+  - `npm test -- src/app/contracts/legacyAdapters.test.ts`
+  - `npm run typecheck`
 
 ### In Progress
 
-- Migrate runtime/module layout from current Chrome-first folders toward target platform boundaries.
+- Slice 2 browser-layer extraction.
 - Replace Chrome-centric save flow assumptions with capability-aware save strategies.
 - Insert provider registry layer ahead of multi-provider extraction.
 
@@ -82,4 +85,4 @@ Evidence:
 
 ## Next Resume Step
 
-Design the first migration slice: map each current `src/` module to the target boundaries (`app/core/platform/shared`) and define the minimal adapter interfaces needed to preserve the current Chrome + ChatGPT flow during refactor.
+Wrap current Chrome operations and folder-writing behavior behind the new browser contracts so the existing happy path runs through `BrowserCapabilities` + `SaveStrategy` without changing user-visible behavior.

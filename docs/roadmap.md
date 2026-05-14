@@ -11,9 +11,10 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated again from Chrome-first runtime design into a matrix-first platform architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.6.3` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.6.4` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - Current implementation remains Chrome + ChatGPT, but accepted scope is now poly-browser + multi-provider-ready.
 - Milestone 6 CI/CD and GitHub Release automation is implemented.
+- Slice 1 contract-first scaffold is implemented: browser/provider/core contracts and legacy normalized adapters now exist.
 
 Accepted platform decisions:
 
@@ -26,12 +27,12 @@ Accepted platform decisions:
 
 ## Next Action
 
-Start the platform migration design slice before additional feature work:
+Start Slice 2 browser-layer extraction:
 
-- map current `src/` modules into `src/app`, `src/core`, `src/platform/browser`, `src/platform/provider`, `src/shared`
-- define browser capability contracts and save strategy resolution
-- define provider registry and normalized draft/artifact boundaries
-- preserve the current Chrome + ChatGPT flow during refactor
+- wrap current Chrome operations behind the new browser contracts
+- refactor folder-write flow toward `SaveStrategy`
+- keep Chrome direct folder export working through the abstraction
+- stub Firefox packaged download strategy contract without changing happy path
 
 Milestone 1 acceptance check is implemented and ready for manual Chrome validation:
 

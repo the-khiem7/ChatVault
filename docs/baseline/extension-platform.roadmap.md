@@ -53,19 +53,17 @@ In Progress
 
 ### In Progress
 
-- Gemini extraction hardening.
-- provider-specific fixture coverage.
+- manual real-page validation for Gemini.
 - UX progress alignment against the expanded runtime progress model.
 
 ### Risk
 
-- Gemini DOM drift remains the main functional risk.
+- Gemini DOM drift risk is reduced by fixture coverage, but live DOM drift remains the main functional risk until manual validation is recorded.
 - source tree ownership has migrated, but the physical folder re-layout is not complete.
 - manual real-page validation for Gemini is not yet recorded in the docs pack.
 
 ### Next
 
-- add Gemini edge-case tests and DOM rules
 - run manual validation on `gemini.google.com`
 - then decide whether physical cleanup/re-layout should happen next
 
@@ -99,10 +97,13 @@ In Progress
 - Implemented Slice 6 browser build split in code: browser-specific manifest generation and build outputs now exist for `Chrome` and `Firefox`.
 - Implemented Slice 7 Gemini provider add in code: provider registry now resolves `ChatGPT` and `Gemini`, and extension host permissions include Gemini.
 - Added provider-specific Gemini DOM extraction rules and tests; Gemini no longer depends purely on the shared extractor wrapper path.
+- Added Gemini fixture coverage for drifted `data-testid` containers, multi-paragraph model output, and paragraph/image ordering.
 
 Evidence:
 
 - Files changed:
+  - `src/content/extractors/extractGeminiConversation.ts`
+  - `src/content/extractors/extractGeminiConversation.test.ts`
   - `docs/architecture.md`
   - `docs/data-contracts.md`
   - `docs/roadmap.md`
@@ -136,6 +137,7 @@ Evidence:
 - Post-slice hardening for multi-provider extraction quality.
 - Preserve registry-driven provider ownership.
 - Keep browser-layer untouched while improving provider-specific behavior.
+- Record manual Gemini validation evidence after running the extension on a live `gemini.google.com` conversation.
 
 ### Pending
 
@@ -151,18 +153,17 @@ Evidence:
 
 ## Next Resume Step
 
-Add Gemini-specific fixtures for images, multi-paragraph model output, and container drift detection.
+Run manual Gemini validation on `gemini.google.com`, record the tested DOM shape/results, then decide whether physical source-tree cleanup should be the next slice.
 
 ## Exact Next Task
 
-Implement the next Gemini hardening slice with this order:
+Implement the next Gemini validation slice with this order:
 
-1. add failing tests in `src/content/extractors/extractGeminiConversation.test.ts`
-2. extend `src/content/extractors/extractGeminiConversation.ts`
-3. run targeted tests
-4. run `npm run typecheck`
-5. run browser build + verify commands
-6. sync `docs/roadmap.md` and this baseline roadmap
+1. open a live `gemini.google.com` conversation in Chrome
+2. export via the extension and capture popup/export results
+3. inspect whether drifted container rules and ordered image/code/paragraph blocks match the live DOM
+4. record evidence in `docs/roadmap.md` and this baseline roadmap
+5. decide whether source-tree cleanup/re-layout or additional Gemini DOM rules should be next
 
 Suggested verification commands:
 

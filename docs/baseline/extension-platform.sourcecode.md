@@ -96,6 +96,6 @@ sequenceDiagram
 - `src/app/exportCurrentChatApp.ts`: application orchestration wrapper used by background
 - `src/core/buildExportArtifact.ts`: current core-owned normalized artifact builder
 - `src/content/extractors/extractConversation.ts`: shared ChatGPT-oriented extractor baseline
-- `src/content/extractors/extractGeminiConversation.ts`: Gemini-specific extractor under active hardening
+- `src/content/extractors/extractGeminiConversation.ts`: Gemini-specific extractor with drifted `data-testid` container support and ordered paragraph/code/image block extraction
 - `src/content/extractors/providerExtractors.ts`: provider dispatch for content extraction
 - `src/platform/browser/manifest.ts`: browser-specific manifest generation for `Chrome` and `Firefox`

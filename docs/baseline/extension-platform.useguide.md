@@ -51,6 +51,12 @@ The UI/runtime progress contract should report these ordered states:
 - `ProviderRegistry`: provider lookup + resolution entrypoint
 - `ProviderExtractor`: provider-specific content extraction boundary
 
+## Implemented Gemini Extraction Notes
+
+- Gemini extractor now accepts both stable provider containers and drifted `data-testid`/`data-test-id` message containers for user/model turns.
+- Gemini model output preserves DOM order across paragraph, code, and image blocks for the covered fixture shapes.
+- Real-page Gemini validation is still required before treating the extractor as production-stable.
+
 ## Planned Output Contract
 
 The save layer should receive `NormalizedExportArtifact` rather than assuming direct folder write as the only persistence mode.

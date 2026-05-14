@@ -22,6 +22,7 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Slice 6 browser build split is implemented: browser-specific manifests and build outputs now emit under `dist/chrome` and `dist/firefox`.
 - Slice 7 Gemini provider add is implemented: provider registry now resolves both `ChatGPT` and `Gemini` without browser-layer changes.
 - Provider-specific Gemini extraction now has real DOM-specific message container rules and its own extractor file.
+- Gemini extractor now covers drifted `data-testid` containers plus ordered paragraph/code/image fixture shapes.
 
 Accepted platform decisions:
 
@@ -37,7 +38,7 @@ Accepted platform decisions:
 Next implementation focus:
 
 - harden provider-specific extraction quality for `Gemini`
-- add more Gemini-specific DOM fixtures for images/tables/edge cases
+- run live Gemini validation against the new fixture-covered DOM rules
 - optionally align popup progress labels with the expanded progress model
 
 Milestone 1 acceptance check is implemented and ready for manual Chrome validation:

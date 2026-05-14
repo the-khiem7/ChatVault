@@ -30,19 +30,17 @@ Evolve ChatCargo from a Chrome-only ChatGPT exporter into a matrix-first extensi
 
 ### In Progress
 
-- Gemini extraction hardening.
-- provider-specific fixture coverage.
+- manual real-page validation for Gemini.
 - UX progress alignment against the expanded runtime progress model.
 
 ### Risk
 
-- Gemini DOM drift remains the main functional risk.
+- Gemini DOM drift risk is reduced by fixture coverage, but real-page DOM drift can still regress without manual validation.
 - source tree ownership has migrated, but the physical folder re-layout is not complete.
-- manual real-page validation for Gemini is not yet recorded in the docs pack.
+- Gemini manual validation evidence is not yet recorded in the docs pack.
 
 ### Next
 
-- add Gemini edge-case tests and DOM rules
 - run manual validation on `gemini.google.com`
 - then decide whether physical cleanup/re-layout should happen next
 

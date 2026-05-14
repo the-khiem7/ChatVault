@@ -1,7 +1,8 @@
 import "./popup.css";
 import type { FolderExportResult, RuntimeRequest, RuntimeResponse } from "../runtime/messages";
 import type { ExportProgressMessage } from "../runtime/messages";
-import { writeFolderExportArtifact } from "./folderWriter";
+import { toNormalizedExportArtifact } from "../app/contracts/legacyAdapters";
+import { saveArtifact } from "../platform/browser/saveStrategies";
 import { formatExportError } from "./exportError";
 import { buildSuccessViewModel } from "./resultView";
 
@@ -194,18 +195,16 @@ exportButton?.addEventListener("click", async () => {
     setStepState(exportStep, "pending");
     const totalAssets = response.data.files.filter((file) => file.relativePath.startsWith("assets/")).length;
     updateProgress("Writing images", 0, totalAssets, totalAssets > 0 ? "Starting asset writes" : "No images to write");
-    await writeFolderExportArtifact(folder, {
-      rootFolder: response.data.rootFolder,
-      files: response.data.files,
-      manifest: {
-        rootFolder: response.data.rootFolder,
-        markdownPath: response.data.markdownPath,
-        assetPaths: response.data.files
-          .map((file) => file.relativePath)
-          .filter((path) => path.startsWith("assets/"))
+    await saveArtifact({
+      browser: {
+        browserId: "chrome",
+        selectedFolder: folder
       },
-      warnings: response.warnings ?? []
-    }, {
+      capabilities: {
+        canDirectWriteFolder: Boolean(window.showDirectoryPicker),
+        canDownloadArchive: false
+      },
+      artifact: toNormalizedExportArtifact(response.data),
       onProgress(progress) {
         updateProgress("Writing images", progress.completed, progress.total, progress.currentLabel);
       }

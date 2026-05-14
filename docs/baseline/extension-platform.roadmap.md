@@ -45,6 +45,7 @@ In Progress
 - Created durable baseline pack under `docs/baseline/extension-platform.*`.
 - Closed previously noted Firefox/platform risks in decision history.
 - Implemented Slice 1 contract scaffold in code: browser/provider/core contract modules and legacy normalization adapters.
+- Implemented Slice 2 browser-layer extraction in code: current Chrome folder export now runs through capability-aware save strategy resolution.
 
 Evidence:
 
@@ -64,12 +65,13 @@ Evidence:
   - code graph architecture snapshot reviewed for current structure
   - `npm test -- src/app/contracts/legacyAdapters.test.ts`
   - `npm run typecheck`
+  - `npm test -- src/platform/browser/saveStrategies.test.ts src/popup/folderWriter.test.ts src/app/contracts/legacyAdapters.test.ts`
 
 ### In Progress
 
-- Slice 2 browser-layer extraction.
-- Replace Chrome-centric save flow assumptions with capability-aware save strategies.
+- Slice 3 provider-layer extraction.
 - Insert provider registry layer ahead of multi-provider extraction.
+- Preserve current ChatGPT extraction while shifting ownership into platform/provider.
 
 ### Pending
 
@@ -85,4 +87,4 @@ Evidence:
 
 ## Next Resume Step
 
-Wrap current Chrome operations and folder-writing behavior behind the new browser contracts so the existing happy path runs through `BrowserCapabilities` + `SaveStrategy` without changing user-visible behavior.
+Move current ChatGPT extraction behind `ProviderExtractor` and a concrete `ProviderRegistry`, while keeping the runtime export happy path stable.

@@ -107,7 +107,7 @@ Deliverable:
 
 ## Slice 2: Browser Layer Extraction
 
-Status: Ready
+Status: Implemented
 
 Goal:
 
@@ -132,6 +132,10 @@ Deliverable:
 
 - Chrome flow still works through strategy abstraction
 - Firefox path may still be stubbed, but contract-complete
+- implemented files:
+  - `src/platform/browser/saveStrategies.ts`
+  - `src/platform/browser/saveStrategies.test.ts`
+  - `src/popup/popup.ts`
 
 ## Slice 3: Provider Layer Extraction
 
@@ -310,4 +314,4 @@ After each slice:
 
 ## Immediate Next Step
 
-Implement Slice 2 by routing the current Chrome folder-export path through `BrowserCapabilities` and `SaveStrategy`, while keeping existing popup/service-worker behavior unchanged.
+Implement Slice 3 by wrapping the current ChatGPT extraction flow in `ProviderExtractor` and resolving it through a concrete `ProviderRegistry` from the application/background path.

@@ -11,10 +11,11 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated again from Chrome-first runtime design into a matrix-first platform architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.6.4` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.6.5` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - Current implementation remains Chrome + ChatGPT, but accepted scope is now poly-browser + multi-provider-ready.
 - Milestone 6 CI/CD and GitHub Release automation is implemented.
 - Slice 1 contract-first scaffold is implemented: browser/provider/core contracts and legacy normalized adapters now exist.
+- Slice 2 browser-layer extraction is implemented for the current Chrome happy path through capability-aware save strategy resolution.
 
 Accepted platform decisions:
 
@@ -27,12 +28,12 @@ Accepted platform decisions:
 
 ## Next Action
 
-Start Slice 2 browser-layer extraction:
+Start Slice 3 provider-layer extraction:
 
-- wrap current Chrome operations behind the new browser contracts
-- refactor folder-write flow toward `SaveStrategy`
-- keep Chrome direct folder export working through the abstraction
-- stub Firefox packaged download strategy contract without changing happy path
+- move current ChatGPT extraction behind `ProviderExtractor`
+- add first concrete `ProviderRegistry` implementation
+- resolve provider in app/background path instead of implicit ChatGPT-only flow
+- keep current ChatGPT happy path unchanged while shifting ownership
 
 Milestone 1 acceptance check is implemented and ready for manual Chrome validation:
 

@@ -1,7 +1,21 @@
 import type { NormalizedExportArtifact } from "../../core/contracts";
 
+type WritableFileHandle = {
+  createWritable(): Promise<{
+    write(content: string | Blob): Promise<void>;
+    close(): Promise<void>;
+  }>;
+};
+
+export type WritableDirectoryHandle = {
+  name?: string;
+  getDirectoryHandle(name: string, options?: { create?: boolean }): Promise<WritableDirectoryHandle>;
+  getFileHandle(name: string, options?: { create?: boolean }): Promise<WritableFileHandle>;
+};
+
 export type BrowserApi = {
   browserId: string;
+  selectedFolder?: WritableDirectoryHandle;
 };
 
 export type BrowserCapabilities = {
@@ -13,6 +27,12 @@ export type SaveContext = {
   browser: BrowserApi;
   capabilities: BrowserCapabilities;
   artifact: NormalizedExportArtifact;
+  onProgress?: (progress: {
+    phase: "writing-assets";
+    completed: number;
+    total: number;
+    currentLabel: string;
+  }) => void;
 };
 
 export type SaveResult = {

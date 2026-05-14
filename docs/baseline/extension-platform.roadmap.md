@@ -49,6 +49,7 @@ In Progress
 - Implemented Slice 3 provider-layer extraction in code: current ChatGPT export now resolves through a provider registry and provider extractor path.
 - Implemented Slice 4 core export normalization in code: export-building now routes through a `src/core` normalized artifact builder.
 - Implemented Slice 5 app orchestration migration in code: background/runtime export now routes through `src/app` orchestration.
+- Implemented Slice 6 browser build split in code: browser-specific manifest generation and build outputs now exist for `Chrome` and `Firefox`.
 
 Evidence:
 
@@ -72,12 +73,17 @@ Evidence:
   - `npm test -- src/platform/provider/chatgptRegistry.test.ts src/runtime/exportCurrentChat.test.ts src/platform/browser/saveStrategies.test.ts`
   - `npm test -- src/core/buildExportArtifact.test.ts src/runtime/exportCurrentChat.test.ts src/platform/provider/chatgptRegistry.test.ts`
   - `npm test -- src/app/exportCurrentChatApp.test.ts src/runtime/exportCurrentChat.test.ts src/core/buildExportArtifact.test.ts`
+  - `npm test -- src/platform/browser/manifest.test.ts`
+  - `npm run build:chrome`
+  - `npm run verify:extension:chrome`
+  - `npm run build:firefox`
+  - `npm run verify:extension:firefox`
 
 ### In Progress
 
-- Slice 6 browser build split.
-- Keep one source tree with browser-specific outputs.
-- Preserve current Chrome build behavior while shaping Firefox packaging.
+- Slice 7 Gemini provider add.
+- Preserve registry-driven provider ownership.
+- Keep browser-layer untouched while adding second provider.
 
 ### Pending
 
@@ -93,4 +99,4 @@ Evidence:
 
 ## Next Resume Step
 
-Define browser-specific manifest/build output shape so the project can ship `Chrome` and `Firefox` artifacts from one codebase without forking sources.
+Add a second provider through the registry path so `Gemini` proves the multi-provider architecture with minimal orchestration changes.

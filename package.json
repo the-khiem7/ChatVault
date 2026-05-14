@@ -1,13 +1,17 @@
 {
   "name": "chatcargo",
-  "version": "0.6.8",
+  "version": "0.6.9",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "node scripts/build-extension.mjs chrome",
+    "build:chrome": "node scripts/build-extension.mjs chrome",
+    "build:firefox": "node scripts/build-extension.mjs firefox",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "verify:extension": "node scripts/verify-extension-bundle.mjs"
+    "verify:extension": "node scripts/verify-extension-bundle.mjs chrome",
+    "verify:extension:chrome": "node scripts/verify-extension-bundle.mjs chrome",
+    "verify:extension:firefox": "node scripts/verify-extension-bundle.mjs firefox"
   },
   "devDependencies": {
     "@types/chrome": "^0.1.31",

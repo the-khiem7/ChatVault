@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const contentScriptPath = resolve("dist/src/content.js");
+const target = process.argv[2] || "chrome";
+const contentScriptPath = resolve(`dist/${target}/src/content.js`);
 const contentScript = readFileSync(contentScriptPath, "utf8");
 
 if (/^\s*import(?:\s|[{*"'])/m.test(contentScript) || /^\s*export(?:\s|[{*])/m.test(contentScript)) {

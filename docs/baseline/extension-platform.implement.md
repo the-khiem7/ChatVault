@@ -242,7 +242,7 @@ Deliverable:
 
 ## Slice 6: Browser Build Split
 
-Status: Pending
+Status: Implemented
 
 Goal:
 
@@ -264,6 +264,13 @@ Constraints:
 Deliverable:
 
 - browser-specific build outputs from one codebase
+- implemented files:
+  - `src/platform/browser/manifest.ts`
+  - `src/platform/browser/manifest.test.ts`
+  - `vite.config.ts`
+  - `scripts/build-extension.mjs`
+  - `scripts/verify-extension-bundle.mjs`
+  - `package.json`
 
 ## Slice 7: Gemini Provider Add
 
@@ -328,4 +335,4 @@ After each slice:
 
 ## Immediate Next Step
 
-Implement Slice 6 by defining browser-specific manifest/build outputs for `Chrome` and `Firefox` while keeping the current shared source tree intact.
+Implement Slice 7 by adding `Gemini` as the second provider through the registry/extractor path, without changing browser save orchestration.

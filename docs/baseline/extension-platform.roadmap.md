@@ -48,6 +48,7 @@ In Progress
 - Implemented Slice 2 browser-layer extraction in code: current Chrome folder export now runs through capability-aware save strategy resolution.
 - Implemented Slice 3 provider-layer extraction in code: current ChatGPT export now resolves through a provider registry and provider extractor path.
 - Implemented Slice 4 core export normalization in code: export-building now routes through a `src/core` normalized artifact builder.
+- Implemented Slice 5 app orchestration migration in code: background/runtime export now routes through `src/app` orchestration.
 
 Evidence:
 
@@ -70,12 +71,13 @@ Evidence:
   - `npm test -- src/platform/browser/saveStrategies.test.ts src/popup/folderWriter.test.ts src/app/contracts/legacyAdapters.test.ts`
   - `npm test -- src/platform/provider/chatgptRegistry.test.ts src/runtime/exportCurrentChat.test.ts src/platform/browser/saveStrategies.test.ts`
   - `npm test -- src/core/buildExportArtifact.test.ts src/runtime/exportCurrentChat.test.ts src/platform/provider/chatgptRegistry.test.ts`
+  - `npm test -- src/app/exportCurrentChatApp.test.ts src/runtime/exportCurrentChat.test.ts src/core/buildExportArtifact.test.ts`
 
 ### In Progress
 
-- Slice 5 app orchestration migration.
-- Move orchestration ownership toward `src/app`.
-- Preserve current behavior while improving runtime ownership clarity.
+- Slice 6 browser build split.
+- Keep one source tree with browser-specific outputs.
+- Preserve current Chrome build behavior while shaping Firefox packaging.
 
 ### Pending
 
@@ -91,4 +93,4 @@ Evidence:
 
 ## Next Resume Step
 
-Move runtime orchestration toward `src/app` so background/application ownership is explicit and progress/error mapping aligns with the accepted architecture.
+Define browser-specific manifest/build output shape so the project can ship `Chrome` and `Firefox` artifacts from one codebase without forking sources.

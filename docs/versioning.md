@@ -35,5 +35,5 @@ Milestone 3 fourth patch:    0.3.4
 Current version:
 
 ```txt
-0.6.7
+0.6.8
 ```

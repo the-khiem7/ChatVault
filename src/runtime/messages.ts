@@ -20,7 +20,13 @@ export type RuntimeRequest =
   | { type: "EXTRACT_PAGE_SUMMARY" }
   | { type: "EXTRACT_CONVERSATION" };
 
-export type ExportProgressPhase = "resolving-assets" | "writing-assets";
+export type ExportProgressPhase =
+  | "detecting-provider"
+  | "extracting-content"
+  | "resolving-assets"
+  | "building-artifact"
+  | "writing-assets"
+  | "saving-artifact";
 
 export type ExportProgressMessage = {
   type: "EXPORT_PROGRESS";

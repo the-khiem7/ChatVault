@@ -203,7 +203,7 @@ Deliverable:
 
 ## Slice 5: App Orchestration Migration
 
-Status: Ready
+Status: Implemented
 
 Goal:
 
@@ -234,6 +234,11 @@ Deliverable:
 
 - runtime flow matches architecture docs
 - progress/error UI grounded on stable contracts
+- implemented files:
+  - `src/app/exportCurrentChatApp.ts`
+  - `src/app/exportCurrentChatApp.test.ts`
+  - `src/background/serviceWorker.ts`
+  - `src/runtime/messages.ts`
 
 ## Slice 6: Browser Build Split
 
@@ -323,4 +328,4 @@ After each slice:
 
 ## Immediate Next Step
 
-Implement Slice 5 by moving runtime orchestration toward `src/app`, keeping popup as UX orchestrator and background as application orchestrator with explicit progress/error mapping.
+Implement Slice 6 by defining browser-specific manifest/build outputs for `Chrome` and `Firefox` while keeping the current shared source tree intact.

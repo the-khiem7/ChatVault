@@ -1,6 +1,6 @@
+import { exportCurrentChatApp } from "../app/exportCurrentChatApp";
 import { getActiveTabStatus } from "../runtime/activeTabStatus";
 import { createChromeApi } from "../runtime/chromeApi";
-import { exportCurrentChat } from "../runtime/exportCurrentChat";
 import type { ExportProgressMessage, RuntimeRequest, RuntimeResponse } from "../runtime/messages";
 
 const chromeApi = createChromeApi();
@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.type === "EXPORT_CURRENT_CHAT") {
-      exportCurrentChat(chromeApi, (progress) => {
+      exportCurrentChatApp(chromeApi, (progress) => {
         if (!request.requestId) {
           return;
         }

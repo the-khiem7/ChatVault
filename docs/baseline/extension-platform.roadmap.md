@@ -18,9 +18,56 @@ Ship one codebase that can output browser-specific extension builds, keep `Chrom
 - `docs/baseline/extension-platform.sourcecode.md`
 - `docs/baseline/extension-platform.useguide.md`
 
+## Resume Contract
+
+This file must be sufficient for a new agent to continue work without prior conversation memory.
+
+When resuming:
+
+- trust this file over old chat context
+- use the baseline pack before scanning broad repo history
+- treat stale docs as bugs and update them in the same change set as code
+- preserve current `Chrome` and `Firefox` build outputs while changing provider behavior
+
+Current high-priority implementation files:
+
+- `src/platform/provider/providerRegistry.ts`
+- `src/runtime/exportCurrentChat.ts`
+- `src/content/extractors/extractGeminiConversation.ts`
+- `src/content/extractors/providerExtractors.ts`
+- `src/content/content.ts`
+- `src/platform/browser/manifest.ts`
+
 ## Current Status
 
 In Progress
+
+## Status Snapshot
+
+### Done
+
+- app/core/platform migration slices are implemented at the ownership/runtime level.
+- browser build split is implemented for `Chrome` and `Firefox`.
+- provider registry is implemented for `ChatGPT` and `Gemini`.
+- core export artifact flow and app orchestration are implemented.
+
+### In Progress
+
+- Gemini extraction hardening.
+- provider-specific fixture coverage.
+- UX progress alignment against the expanded runtime progress model.
+
+### Risk
+
+- Gemini DOM drift remains the main functional risk.
+- source tree ownership has migrated, but the physical folder re-layout is not complete.
+- manual real-page validation for Gemini is not yet recorded in the docs pack.
+
+### Next
+
+- add Gemini edge-case tests and DOM rules
+- run manual validation on `gemini.google.com`
+- then decide whether physical cleanup/re-layout should happen next
 
 ## Scope
 
@@ -105,3 +152,23 @@ Evidence:
 ## Next Resume Step
 
 Add Gemini-specific fixtures for images, multi-paragraph model output, and container drift detection.
+
+## Exact Next Task
+
+Implement the next Gemini hardening slice with this order:
+
+1. add failing tests in `src/content/extractors/extractGeminiConversation.test.ts`
+2. extend `src/content/extractors/extractGeminiConversation.ts`
+3. run targeted tests
+4. run `npm run typecheck`
+5. run browser build + verify commands
+6. sync `docs/roadmap.md` and this baseline roadmap
+
+Suggested verification commands:
+
+- `npm test -- src/content/extractors/extractGeminiConversation.test.ts src/content/extractors/providerExtractors.test.ts src/runtime/exportCurrentChat.test.ts`
+- `npm run typecheck`
+- `npm run build:chrome`
+- `npm run verify:extension:chrome`
+- `npm run build:firefox`
+- `npm run verify:extension:firefox`

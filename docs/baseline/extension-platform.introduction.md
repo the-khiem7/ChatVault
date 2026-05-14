@@ -19,6 +19,33 @@ Evolve ChatCargo from a Chrome-only ChatGPT exporter into a matrix-first extensi
 - Current implementation is still centered on ChatGPT extraction and popup-driven folder export.
 - Current docs pack in `docs/` still contains several Chrome-only statements that are now narrower than the accepted platform direction.
 
+## Current Snapshot
+
+### Done
+
+- app/core/platform migration slices are implemented at the ownership/runtime level.
+- browser build split is implemented for `Chrome` and `Firefox`.
+- provider registry is implemented for `ChatGPT` and `Gemini`.
+- core export artifact flow and app orchestration are implemented.
+
+### In Progress
+
+- Gemini extraction hardening.
+- provider-specific fixture coverage.
+- UX progress alignment against the expanded runtime progress model.
+
+### Risk
+
+- Gemini DOM drift remains the main functional risk.
+- source tree ownership has migrated, but the physical folder re-layout is not complete.
+- manual real-page validation for Gemini is not yet recorded in the docs pack.
+
+### Next
+
+- add Gemini edge-case tests and DOM rules
+- run manual validation on `gemini.google.com`
+- then decide whether physical cleanup/re-layout should happen next
+
 ## Accepted Direction
 
 - Strategy: matrix-first architecture.
@@ -43,3 +70,26 @@ Evolve ChatCargo from a Chrome-only ChatGPT exporter into a matrix-first extensi
 ## Documentation Scope
 
 This baseline pack records the accepted target state, the current implementation gap, and the next resumable actions for migration from the existing Chrome-first codebase.
+
+## Cold Start Resume
+
+Use this baseline pack as the primary source of truth when resuming without chat history.
+
+Resume order:
+
+1. `docs/baseline/extension-platform.introduction.md`
+2. `docs/baseline/extension-platform.roadmap.md`
+3. `docs/baseline/extension-platform.sourcecode.md`
+4. `docs/baseline/extension-platform.hallucination.md`
+5. `docs/baseline/extension-platform.useguide.md`
+
+Then inspect these implementation files first:
+
+- `src/platform/provider/providerRegistry.ts`
+- `src/content/extractors/extractGeminiConversation.ts`
+- `src/content/extractors/providerExtractors.ts`
+- `src/app/exportCurrentChatApp.ts`
+- `src/core/buildExportArtifact.ts`
+- `src/platform/browser/manifest.ts`
+
+Assume no prior memory beyond what is written in this pack.

@@ -88,3 +88,14 @@ sequenceDiagram
 - Browser: `BrowserApi`, `BrowserCapabilities`, `SaveStrategy`, `SaveContext`, `SaveResult`
 - Provider: `ProviderId`, `ProviderDefinition`, `ProviderRegistry`, `ProviderExtractor`
 - Normalized: `NormalizedPageSummary`, `NormalizedConversationDraft`, `NormalizedExportArtifact`, `ExportProgress`, `ProviderStatus`
+
+## Current Key Files
+
+- `src/platform/provider/providerRegistry.ts`: active multi-provider registry for `chatgpt` and `gemini`
+- `src/runtime/exportCurrentChat.ts`: current runtime export entry used by app orchestration
+- `src/app/exportCurrentChatApp.ts`: application orchestration wrapper used by background
+- `src/core/buildExportArtifact.ts`: current core-owned normalized artifact builder
+- `src/content/extractors/extractConversation.ts`: shared ChatGPT-oriented extractor baseline
+- `src/content/extractors/extractGeminiConversation.ts`: Gemini-specific extractor under active hardening
+- `src/content/extractors/providerExtractors.ts`: provider dispatch for content extraction
+- `src/platform/browser/manifest.ts`: browser-specific manifest generation for `Chrome` and `Firefox`

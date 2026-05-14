@@ -172,7 +172,7 @@ Deliverable:
 
 ## Slice 4: Core Export Normalization
 
-Status: Ready
+Status: Implemented
 
 Goal:
 
@@ -196,6 +196,10 @@ Deliverable:
 
 - pure normalized export pipeline
 - stable handoff object for all save strategies
+- implemented files:
+  - `src/core/buildExportArtifact.ts`
+  - `src/core/buildExportArtifact.test.ts`
+  - `src/runtime/exportCurrentChat.ts`
 
 ## Slice 5: App Orchestration Migration
 
@@ -319,4 +323,4 @@ After each slice:
 
 ## Immediate Next Step
 
-Implement Slice 4 by moving current export-building flow toward `src/core`, with normalized draft/artifact handoff and minimal legacy translation kept only at migration edges.
+Implement Slice 5 by moving runtime orchestration toward `src/app`, keeping popup as UX orchestrator and background as application orchestrator with explicit progress/error mapping.

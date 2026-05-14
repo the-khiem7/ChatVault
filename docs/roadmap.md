@@ -11,12 +11,13 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated again from Chrome-first runtime design into a matrix-first platform architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.6.6` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.6.7` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - Current implementation remains Chrome + ChatGPT, but accepted scope is now poly-browser + multi-provider-ready.
 - Milestone 6 CI/CD and GitHub Release automation is implemented.
 - Slice 1 contract-first scaffold is implemented: browser/provider/core contracts and legacy normalized adapters now exist.
 - Slice 2 browser-layer extraction is implemented for the current Chrome happy path through capability-aware save strategy resolution.
 - Slice 3 provider-layer extraction is implemented for the current ChatGPT happy path through provider registry resolution.
+- Slice 4 core export normalization is implemented: runtime export now builds through `src/core` normalized artifact ownership.
 
 Accepted platform decisions:
 
@@ -29,11 +30,11 @@ Accepted platform decisions:
 
 ## Next Action
 
-Start Slice 4 core export normalization:
+Start Slice 5 app orchestration migration:
 
-- move export-building ownership toward `src/core`
-- route current artifact construction through normalized draft/artifact boundaries
-- reduce direct dependence on legacy `ConversationDraft` / `FolderExportResult` shapes
+- move orchestration ownership toward `src/app`
+- align runtime progress/error mapping with accepted model
+- keep popup UX thin and background/application orchestration explicit
 - preserve current Chrome + ChatGPT behavior during migration
 
 Milestone 1 acceptance check is implemented and ready for manual Chrome validation:

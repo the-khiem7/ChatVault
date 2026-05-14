@@ -47,6 +47,7 @@ In Progress
 - Implemented Slice 1 contract scaffold in code: browser/provider/core contract modules and legacy normalization adapters.
 - Implemented Slice 2 browser-layer extraction in code: current Chrome folder export now runs through capability-aware save strategy resolution.
 - Implemented Slice 3 provider-layer extraction in code: current ChatGPT export now resolves through a provider registry and provider extractor path.
+- Implemented Slice 4 core export normalization in code: export-building now routes through a `src/core` normalized artifact builder.
 
 Evidence:
 
@@ -68,12 +69,13 @@ Evidence:
   - `npm run typecheck`
   - `npm test -- src/platform/browser/saveStrategies.test.ts src/popup/folderWriter.test.ts src/app/contracts/legacyAdapters.test.ts`
   - `npm test -- src/platform/provider/chatgptRegistry.test.ts src/runtime/exportCurrentChat.test.ts src/platform/browser/saveStrategies.test.ts`
+  - `npm test -- src/core/buildExportArtifact.test.ts src/runtime/exportCurrentChat.test.ts src/platform/provider/chatgptRegistry.test.ts`
 
 ### In Progress
 
-- Slice 4 core export normalization.
-- Move export-building ownership toward `src/core`.
-- Preserve current behavior while reducing legacy shape coupling.
+- Slice 5 app orchestration migration.
+- Move orchestration ownership toward `src/app`.
+- Preserve current behavior while improving runtime ownership clarity.
 
 ### Pending
 
@@ -89,4 +91,4 @@ Evidence:
 
 ## Next Resume Step
 
-Route current export-building and artifact handoff through `src/core`-owned normalized boundaries, keeping browser/provider adapters thin.
+Move runtime orchestration toward `src/app` so background/application ownership is explicit and progress/error mapping aligns with the accepted architecture.

@@ -1,6 +1,6 @@
 import type { ConversationDraft } from "../domain/conversation";
 import { resolveAssetCandidates } from "../assets/assetResolver";
-import { buildFolderExportArtifact } from "../export/folderExportBuilder";
+import { buildNormalizedExportArtifact } from "../core/buildExportArtifact";
 import { createChatGptExtractConversation, createChatGptProviderRegistry } from "../platform/provider/chatgptRegistry";
 import type { ChromeApi } from "./chromeApi";
 import type { ExportProgressMessage, FolderExportResult, RuntimeResponse } from "./messages";
@@ -60,7 +60,7 @@ export async function exportCurrentChat(
       fetchAsset: chromeApi.fetchAsset,
       onProgress
     });
-    const artifact = buildFolderExportArtifact(draft, {
+    const artifact = buildNormalizedExportArtifact(normalizedDraft, {
       assetReferences: assetResolution.assetReferences,
       assetFiles: assetResolution.assetFiles,
       warnings: [...(draftResponse.warnings ?? []), ...draft.warnings, ...assetResolution.warnings]
@@ -70,16 +70,16 @@ export async function exportCurrentChat(
       ok: true,
       data: {
         rootFolder: artifact.rootFolder,
-        markdownPath: artifact.manifest.markdownPath,
+        markdownPath: artifact.markdownPath,
         title: draft.title,
         messageCount: draft.messages.length,
         assetCandidateCount: draft.assetCandidates.length,
         documentImageCount: draft.diagnostics?.documentImageCount ?? 0,
         messageImageCount: draft.diagnostics?.messageImageCount ?? 0,
-        assetCount: assetResolution.assets.filter((asset) => asset.status === "saved").length,
+        assetCount: artifact.summary.assetCount,
         files: artifact.files
       },
-      warnings: artifact.warnings
+      warnings: [...(draftResponse.warnings ?? []), ...draft.warnings, ...assetResolution.warnings]
     };
   } catch {
     return {

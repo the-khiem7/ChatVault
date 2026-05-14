@@ -194,6 +194,49 @@ describe("exportCurrentChat", () => {
     });
   });
 
+  it("supports gemini pages through provider registry resolution", async () => {
+    const chromeApi: ChromeApi = {
+      getActiveTab: vi.fn().mockResolvedValue({ id: 7, url: "https://gemini.google.com/app/abc" }),
+      sendMessageToTab: vi.fn().mockResolvedValue({
+        ok: true,
+        data: {
+          title: "Gemini Export",
+          sourceUrl: "https://gemini.google.com/app/abc",
+          extractedAt: "2026-04-30T13:00:00.000Z",
+          assetCandidates: [],
+          diagnostics: {
+            documentImageCount: 0,
+            messageImageCount: 0
+          },
+          warnings: [],
+          messages: [
+            {
+              id: "message-1",
+              index: 0,
+              role: "assistant",
+              confidence: "high",
+              warnings: [],
+              blocks: [{ id: "message-1-block-1", kind: "paragraph", text: "Hello from Gemini" }]
+            }
+          ]
+        },
+        warnings: []
+      })
+    };
+
+    const result = await exportCurrentChat(chromeApi);
+
+    expect(chromeApi.sendMessageToTab).toHaveBeenCalledWith(7, { type: "EXTRACT_CONVERSATION" });
+    expect(result).toMatchObject({
+      ok: true,
+      data: {
+        title: "Gemini Export",
+        messageCount: 1,
+        assetCount: 0
+      }
+    });
+  });
+
   it("rejects unsupported pages through provider registry resolution", async () => {
     const chromeApi: ChromeApi = {
       getActiveTab: vi.fn().mockResolvedValue({ id: 5, url: "https://example.com/chat" }),

@@ -11,7 +11,7 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Architecture has been re-evaluated again from Chrome-first runtime design into a matrix-first platform architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
-- Active version is `0.6.9` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
+- Active version is `0.6.10` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
 - Current implementation remains Chrome + ChatGPT, but accepted scope is now poly-browser + multi-provider-ready.
 - Milestone 6 CI/CD and GitHub Release automation is implemented.
 - Slice 1 contract-first scaffold is implemented: browser/provider/core contracts and legacy normalized adapters now exist.
@@ -20,6 +20,7 @@ This is the primary resume file for the project. Keep it current enough that wor
 - Slice 4 core export normalization is implemented: runtime export now builds through `src/core` normalized artifact ownership.
 - Slice 5 app orchestration migration is implemented: background export now routes through `src/app` orchestration.
 - Slice 6 browser build split is implemented: browser-specific manifests and build outputs now emit under `dist/chrome` and `dist/firefox`.
+- Slice 7 Gemini provider add is implemented: provider registry now resolves both `ChatGPT` and `Gemini` without browser-layer changes.
 
 Accepted platform decisions:
 
@@ -32,11 +33,11 @@ Accepted platform decisions:
 
 ## Next Action
 
-Start Slice 7 Gemini provider add:
+Next implementation focus:
 
-- add `Gemini` provider definition
-- implement page detection and extractor boundary
-- prove provider registry supports a second provider without browser-layer changes
+- harden provider-specific extraction quality for `Gemini`
+- decide whether to split content extraction logic by provider runtime files
+- optionally align popup progress labels with the expanded progress model
 
 Milestone 1 acceptance check is implemented and ready for manual Chrome validation:
 

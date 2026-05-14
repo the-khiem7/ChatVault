@@ -59,10 +59,10 @@ export function buildExtensionManifest(target: BrowserBuildTarget, version: stri
       type: "module"
     },
     permissions: ["activeTab", "scripting", "downloads"],
-    host_permissions: ["https://chatgpt.com/*", "https://chat.openai.com/*"],
+    host_permissions: ["https://chatgpt.com/*", "https://chat.openai.com/*", "https://gemini.google.com/*"],
     content_scripts: [
       {
-        matches: ["https://chatgpt.com/*", "https://chat.openai.com/*"],
+        matches: ["https://chatgpt.com/*", "https://chat.openai.com/*", "https://gemini.google.com/*"],
         js: ["src/content.js"],
         run_at: "document_idle"
       }

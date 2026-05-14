@@ -1,7 +1,7 @@
 import type { ConversationDraft } from "../domain/conversation";
 import { resolveAssetCandidates } from "../assets/assetResolver";
 import { buildNormalizedExportArtifact } from "../core/buildExportArtifact";
-import { createChatGptExtractConversation, createChatGptProviderRegistry } from "../platform/provider/chatgptRegistry";
+import { createProviderExtractConversation, createProviderRegistry } from "../platform/provider/providerRegistry";
 import type { ChromeApi } from "./chromeApi";
 import type { ExportProgressMessage, FolderExportResult, RuntimeResponse } from "./messages";
 
@@ -12,7 +12,7 @@ export async function exportCurrentChat(
   onProgress?: (progress: ExportProgress) => void
 ): Promise<RuntimeResponse<FolderExportResult>> {
   const tab = await chromeApi.getActiveTab();
-  const providerRegistry = createChatGptProviderRegistry(createChatGptExtractConversation(chromeApi), tab?.id ?? 0);
+  const providerRegistry = createProviderRegistry(createProviderExtractConversation(chromeApi), tab?.id ?? 0);
 
   if (!tab?.id || !tab.url || !providerRegistry.resolve(tab.url)) {
     return {

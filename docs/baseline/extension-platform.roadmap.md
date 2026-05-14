@@ -50,6 +50,7 @@ In Progress
 - Implemented Slice 4 core export normalization in code: export-building now routes through a `src/core` normalized artifact builder.
 - Implemented Slice 5 app orchestration migration in code: background/runtime export now routes through `src/app` orchestration.
 - Implemented Slice 6 browser build split in code: browser-specific manifest generation and build outputs now exist for `Chrome` and `Firefox`.
+- Implemented Slice 7 Gemini provider add in code: provider registry now resolves `ChatGPT` and `Gemini`, and extension host permissions include Gemini.
 
 Evidence:
 
@@ -78,12 +79,13 @@ Evidence:
   - `npm run verify:extension:chrome`
   - `npm run build:firefox`
   - `npm run verify:extension:firefox`
+  - `npm test -- src/platform/provider/providerRegistry.test.ts src/runtime/exportCurrentChat.test.ts src/platform/browser/manifest.test.ts`
 
 ### In Progress
 
-- Slice 7 Gemini provider add.
+- Post-slice hardening for multi-provider extraction quality.
 - Preserve registry-driven provider ownership.
-- Keep browser-layer untouched while adding second provider.
+- Keep browser-layer untouched while improving provider-specific behavior.
 
 ### Pending
 
@@ -99,4 +101,4 @@ Evidence:
 
 ## Next Resume Step
 
-Add a second provider through the registry path so `Gemini` proves the multi-provider architecture with minimal orchestration changes.
+Decide whether to keep a shared extractor path temporarily or split provider-specific extractor implementations now that `Gemini` is a supported target.

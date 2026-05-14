@@ -274,7 +274,7 @@ Deliverable:
 
 ## Slice 7: Gemini Provider Add
 
-Status: Pending
+Status: Implemented
 
 Goal:
 
@@ -291,6 +291,15 @@ Tasks:
 Deliverable:
 
 - second provider proves registry architecture is real, not theoretical
+- implemented files:
+  - `src/platform/provider/providerRegistry.ts`
+  - `src/platform/provider/providerRegistry.test.ts`
+  - `src/runtime/urlSupport.ts`
+  - `src/shared/constants.ts`
+  - `src/runtime/exportCurrentChat.ts`
+  - `src/runtime/exportCurrentChat.test.ts`
+  - `src/platform/browser/manifest.ts`
+  - `manifest.json`
 
 ## Recommended Execution Order
 
@@ -335,4 +344,4 @@ After each slice:
 
 ## Immediate Next Step
 
-Implement Slice 7 by adding `Gemini` as the second provider through the registry/extractor path, without changing browser save orchestration.
+Evaluate whether `Gemini` needs its own provider-specific DOM extraction implementation now, or whether the shared extraction path is sufficient for the next manual validation cycle.

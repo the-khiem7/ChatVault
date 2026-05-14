@@ -1,6 +1,6 @@
 # Decisions
 
-Updated: 2026-05-01
+Updated: 2026-05-15
 
 Record important decisions here so future work can continue without relying on chat history.
 
@@ -208,3 +208,111 @@ Consequences:
 - service worker remains the orchestrator, while popup or an offscreen/document context owns folder selection and file writing
 - validation must ensure written files match Markdown references
 - unsupported browsers must show a clear fallback or unsupported-browser state
+
+## ADR-011: Adopt Matrix-First Platform Direction
+
+Status: Accepted
+
+Context:
+
+The project outgrew the earlier single-browser and single-provider framing. Firefox is the immediate browser expansion and Gemini is the immediate provider expansion.
+
+Decision:
+
+Adopt a matrix-first architecture that is poly-browser and multi-provider ready from the current phase onward.
+
+Consequences:
+
+- roadmap and docs must stop presenting the product as Chrome-only
+- architecture must separate browser concerns from provider concerns
+- upcoming features should land against reusable contracts, not one-off integrations
+
+## ADR-012: Keep One Codebase With Browser-Specific Outputs
+
+Status: Accepted
+
+Context:
+
+Poly-browser support introduced a choice between separate repos and shared-source multi-build delivery.
+
+Decision:
+
+Keep one codebase with shared source and browser-specific manifests/build/package/release outputs.
+
+Consequences:
+
+- avoids repo duplication
+- keeps product logic unified
+- build and release tooling become browser-aware
+
+## ADR-013: Firefox Uses Packaged Download Export
+
+Status: Accepted
+
+Context:
+
+Chrome direct folder export does not need to define Firefox persistence behavior.
+
+Decision:
+
+Keep `Chrome` direct folder export, but use packaged download export for `Firefox`.
+
+Consequences:
+
+- save behavior must be capability-aware
+- browser persistence cannot be hard-coded purely by browser name
+- normalized export artifact becomes the correct handoff object
+
+## ADR-014: Introduce Full Provider Registry Now
+
+Status: Accepted
+
+Context:
+
+`Gemini` is the immediate next provider after the poly-browser phase. Manual temporary wiring would create avoidable rework.
+
+Decision:
+
+Introduce the full provider registry now instead of deferred registry or manual wiring.
+
+Consequences:
+
+- provider resolution moves into a formal registry/resolver layer
+- extractors can scale without reworking orchestration shape
+- current ChatGPT path must fit the same contract as future providers
+
+## ADR-015: Use Layered Modular Monolith Boundaries
+
+Status: Accepted
+
+Context:
+
+The project needs stronger boundaries, but not the operational overhead of separate repos, internal packages, or a plugin platform.
+
+Decision:
+
+Use a layered modular monolith with target boundaries `src/app`, `src/core`, `src/platform/browser`, `src/platform/provider`, and `src/shared`.
+
+Consequences:
+
+- import rules become explicit
+- migration can proceed incrementally inside one repo
+- browser/provider isolation is enforced without packaging overhead
+
+## ADR-016: Standardize On Ports, Registries, Strategies, Resolvers, And Normalized DTOs
+
+Status: Accepted
+
+Context:
+
+The platform direction needs stable patterns for future providers and browsers.
+
+Decision:
+
+Use Hexagonal / Ports & Adapters, Registry, Strategy, Factory / Resolver, and normalized DTO boundaries as the default platform patterns.
+
+Consequences:
+
+- provider extraction, core export building, and browser persistence stay decoupled
+- runtime orchestration becomes easier to test and migrate
+- implementation reviews can judge changes against explicit pattern expectations

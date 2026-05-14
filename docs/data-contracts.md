@@ -1,8 +1,49 @@
 # Data Contracts
 
-Updated: 2026-05-01
+Updated: 2026-05-15
 
 These contracts define the data exchanged between extraction, export, validation, and runtime orchestration. Keep runtime messages explicit so the project can be tested without Chrome where possible.
+
+## Platform Direction
+
+The accepted direction is to normalize data at the provider/core/browser boundaries so export persistence is no longer modeled as direct folder writing only.
+
+### Browser contracts
+
+- `BrowserApi`
+- `BrowserCapabilities`
+- `SaveStrategy`
+- `SaveContext`
+- `SaveResult`
+
+### Provider contracts
+
+- `ProviderId`
+- `ProviderDefinition`
+- `ProviderRegistry`
+- `ProviderExtractor`
+
+### Normalized contracts
+
+- `NormalizedPageSummary`
+- `NormalizedConversationDraft`
+- `NormalizedExportArtifact`
+- `ExportProgress`
+- `ProviderStatus`
+
+### Progress states
+
+- `detecting-provider`
+- `extracting-content`
+- `resolving-assets`
+- `building-artifact`
+- `saving-artifact`
+
+### Failure boundary groups
+
+- Provider-side: `UNSUPPORTED_PAGE`, `PROVIDER_NOT_AVAILABLE`, `EXTRACTION_FAILED`
+- Runtime/browser-side: `CONTENT_SCRIPT_UNAVAILABLE`, `SAVE_STRATEGY_UNAVAILABLE`, `DIRECTORY_WRITE_FAILED`, `ARCHIVE_DOWNLOAD_FAILED`
+- Core/export-side: `EXPORT_BUILD_FAILED`, `ASSET_FETCH_FAILED`
 
 ## ConversationDraft
 

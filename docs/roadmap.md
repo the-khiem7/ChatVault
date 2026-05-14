@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated: 2026-05-01
+Updated: 2026-05-15
 
 This is the primary resume file for the project. Keep it current enough that work can continue without reading prior chat history.
 
@@ -8,21 +8,30 @@ This is the primary resume file for the project. Keep it current enough that wor
 
 - The original planning brief has been incorporated into `docs/`.
 - Documentation foundation exists in `docs/`.
-- Architecture has been re-evaluated from the initial file tree into a runtime-first project architecture.
+- Architecture has been re-evaluated again from Chrome-first runtime design into a matrix-first platform architecture.
 - Root `README.md` introduces the project.
 - Milestone 1 extension skeleton has been scaffolded.
 - Active version is `0.6.3` using `0.<milestone>.<patch>` from [versioning.md](versioning.md).
-- MVP target is a Chrome Manifest V3 extension for exporting the current ChatGPT conversation only.
+- Current implementation remains Chrome + ChatGPT, but accepted scope is now poly-browser + multi-provider-ready.
 - Milestone 6 CI/CD and GitHub Release automation is implemented.
+
+Accepted platform decisions:
+
+- one codebase
+- browser-specific build outputs
+- `Chrome` direct folder export
+- `Firefox` packaged download export
+- full provider registry now
+- layered modular monolith
 
 ## Next Action
 
-Implement Milestone 7 Robustness after Milestone 6 CI/CD completion:
+Start the platform migration design slice before additional feature work:
 
-- lock down layered selectors and validation warnings for DOM extraction drift
-- add retry and progress affordances for popup/service-worker lifecycle issues
-- validate popup close and service worker restart scenarios under export load
-- keep user-visible warning and retry states explicit for partial failures
+- map current `src/` modules into `src/app`, `src/core`, `src/platform/browser`, `src/platform/provider`, `src/shared`
+- define browser capability contracts and save strategy resolution
+- define provider registry and normalized draft/artifact boundaries
+- preserve the current Chrome + ChatGPT flow during refactor
 
 Milestone 1 acceptance check is implemented and ready for manual Chrome validation:
 
@@ -35,7 +44,14 @@ Click popup button
 
 ## Active Scope
 
-Build a Chrome Extension that exports the currently opened ChatGPT conversation into a user-selected local folder containing:
+Build ChatCargo as one browser-extension codebase that can export the currently opened supported AI conversation through browser-appropriate save behavior.
+
+Current rollout target:
+
+- browsers: `Chrome`, `Firefox`
+- providers: `ChatGPT` now, `Gemini` next
+
+Current Chrome behavior remains:
 
 ```txt
 <slug>/conversation.md
@@ -45,12 +61,11 @@ Build a Chrome Extension that exports the currently opened ChatGPT conversation 
 The extension must:
 
 - Use the user's real authenticated browser session.
-- Extract rendered DOM from the current ChatGPT page.
-- Keep DOM extraction separate from export/download orchestration.
+- Extract rendered DOM from the current supported provider page.
+- Keep provider extraction separate from browser persistence orchestration.
 - Preserve message order and roles.
 - Preserve content as originally written as much as possible.
-- Download images/assets locally when browser policy allows.
-- Let the user choose the export folder before writing files.
+- Save artifacts using capability-aware browser strategies.
 - Avoid external servers, telemetry, analytics, and cloud sync.
 - Follow the architecture in [architecture.md](architecture.md).
 

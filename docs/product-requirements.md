@@ -1,10 +1,10 @@
 # Product Requirements
 
-Updated: 2026-05-01
+Updated: 2026-05-15
 
 ## Product Goal
 
-Build a Chrome Manifest V3 extension that exports the currently opened ChatGPT conversation into a portable local Markdown folder with assets.
+Build one extension codebase that exports the currently opened supported AI conversation into a browser-compatible local export artifact while preserving content for human-readable use.
 
 This is a lossless exporter, not a summarizer or note generator.
 
@@ -36,11 +36,11 @@ The extension must preserve original content and ordering. It must not rewrite, 
 
 ## Architectural Product Constraints
 
-The product must be implemented as a local Chrome MV3 extension with these constraints:
+The product must be implemented as a local browser extension platform with these constraints:
 
-- Use the user's existing authenticated Chrome session.
-- Read the rendered ChatGPT page through a content script.
-- Keep DOM extraction separate from export writing orchestration.
+- Use the user's existing authenticated browser session.
+- Read the rendered supported provider page through a provider runtime/content script.
+- Keep provider extraction separate from browser save orchestration.
 - Keep final download controlled by extension runtime code, not page code.
 - Keep export transformation logic testable outside Chrome APIs.
 - Do not use Playwright, a backend server, or the OpenAI API for MVP.
@@ -73,8 +73,6 @@ Out of scope for MVP:
 - Git auto commit
 - cloud sync
 - Obsidian plugin
-- cross-browser support
-- multi-platform AI chat support
 - Playwright crawler
 - server backend
 - OpenAI API integration
@@ -83,21 +81,22 @@ Out of scope for MVP:
 
 ## Target Platform
 
-Initial target:
+Current rollout target:
 
-- Desktop Chrome
-- Chrome Manifest V3
-- ChatGPT web app
-- `https://chatgpt.com/*`
-- `https://chat.openai.com/*`
+- `Chrome`
+- `Firefox`
+- `ChatGPT`
 
-Possible future targets:
+Immediate next provider:
 
-- Firefox WebExtension
-- Claude
-- Perplexity
-- Gemini
-- Poe
+- `Gemini`
+
+Platform rules:
+
+- one shared codebase
+- browser-specific manifests/build outputs
+- capability-aware save behavior
+- full provider registry
 
 ## User Flow
 

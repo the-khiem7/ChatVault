@@ -1,20 +1,53 @@
 # Architecture
 
-Updated: 2026-05-01
+Updated: 2026-05-15
 
 This document is the project architecture source of truth. The original planning brief has been incorporated into the docs; this file records the evaluated architecture that implementation should follow.
 
 ## Architecture Summary
 
-Build a Chrome Manifest V3 extension with a runtime-first design:
+Build ChatCargo as a matrix-first browser extension platform with a layered modular monolith design:
+
+- One shared codebase.
+- Browser-specific manifests, build outputs, packaging, and release artifacts.
+- Current browser rollout: `Chrome`, `Firefox`.
+- Current provider rollout: `ChatGPT`; next provider: `Gemini`.
+- Target top-level boundaries: `src/app`, `src/core`, `src/platform/browser`, `src/platform/provider`, `src/shared`.
+
+Current runtime ownership remains valid inside this broader direction:
 
 - Popup owns UI state and user interaction only.
-- Content script owns ChatGPT DOM inspection only.
-- Service worker owns extension orchestration, tab validation, Chrome API calls, and download handoff.
-- Pure project modules own Markdown writing, folder export modeling, validation, slugging, and asset naming.
-- Offscreen document is optional and introduced only if folder writing needs a document context that must outlive the popup.
+- Content/provider runtime owns provider DOM inspection only.
+- Background/service worker owns application orchestration, provider resolution, browser API calls, and export handoff.
+- Core owns normalized export building, validation, slugging, and asset naming.
+- Browser save layer persists normalized artifacts through capability-aware strategies.
+- Offscreen document remains optional and introduced only if a browser save strategy needs it.
 
 The architecture avoids Playwright, login automation, backend services, cloud sync, telemetry, and broad host permissions.
+
+## Platform Principles
+
+- Use Hexagonal / Ports & Adapters boundaries.
+- Use Registry for provider resolution.
+- Use Strategy for browser save behavior.
+- Use Factory / Resolver for runtime selection.
+- Use normalized DTO boundaries between provider extraction, core export building, and browser persistence.
+
+## Dependency Rules
+
+- `app/*` may import `core`, `platform`, `shared`.
+- `platform/browser/*` may import `core`, `shared`.
+- `platform/provider/*` may import `core`, `shared`.
+- `core/*` may import only `shared`.
+- `shared/*` stays light and low-policy.
+
+## Hard Separation Rules
+
+- `platform/browser` must not import `platform/provider`.
+- `platform/provider` must not import `platform/browser`.
+- `core` must not import concrete browser/provider adapters.
+- Provider extractors must not perform final persistence.
+- Browser save strategies must not parse provider DOM.
 
 ## Evaluation of Initial Structure
 

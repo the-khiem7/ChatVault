@@ -51,6 +51,7 @@ In Progress
 - Implemented Slice 5 app orchestration migration in code: background/runtime export now routes through `src/app` orchestration.
 - Implemented Slice 6 browser build split in code: browser-specific manifest generation and build outputs now exist for `Chrome` and `Firefox`.
 - Implemented Slice 7 Gemini provider add in code: provider registry now resolves `ChatGPT` and `Gemini`, and extension host permissions include Gemini.
+- Added provider-specific Gemini DOM extraction rules and tests; Gemini no longer depends purely on the shared extractor wrapper path.
 
 Evidence:
 
@@ -80,6 +81,8 @@ Evidence:
   - `npm run build:firefox`
   - `npm run verify:extension:firefox`
   - `npm test -- src/platform/provider/providerRegistry.test.ts src/runtime/exportCurrentChat.test.ts src/platform/browser/manifest.test.ts`
+  - `npm test -- src/content/extractors/providerExtractors.test.ts src/platform/provider/providerRegistry.test.ts src/runtime/exportCurrentChat.test.ts`
+  - `npm test -- src/content/extractors/extractGeminiConversation.test.ts src/content/extractors/providerExtractors.test.ts src/runtime/exportCurrentChat.test.ts`
 
 ### In Progress
 
@@ -101,4 +104,4 @@ Evidence:
 
 ## Next Resume Step
 
-Decide whether to keep a shared extractor path temporarily or split provider-specific extractor implementations now that `Gemini` is a supported target.
+Add Gemini-specific fixtures for images, multi-paragraph model output, and container drift detection.

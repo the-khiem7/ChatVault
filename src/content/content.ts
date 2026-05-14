@@ -1,6 +1,6 @@
 import type { PageSummary, RuntimeRequest, RuntimeResponse } from "../runtime/messages";
 import type { ConversationDraft } from "../domain/conversation";
-import { extractConversation } from "./extractors/extractConversation";
+import { extractConversationByProvider } from "./extractors/providerExtractors";
 
 const FALLBACK_CONVERSATION_TITLE = "Untitled ChatGPT Conversation";
 const LISTENER_FLAG = "__chatGptMarkdownExporterContentListener";
@@ -34,7 +34,7 @@ if (!window[LISTENER_FLAG]) {
 
         sendResponse({
           ok: true,
-          data: extractConversation(document, window.location),
+          data: extractConversationByProvider(document, window.location),
           warnings: []
         });
         return false;

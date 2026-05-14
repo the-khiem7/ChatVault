@@ -1,9 +1,9 @@
 import type { ConversationDraft } from "../domain/conversation";
 import { resolveAssetCandidates } from "../assets/assetResolver";
 import { buildFolderExportArtifact } from "../export/folderExportBuilder";
+import { createChatGptExtractConversation, createChatGptProviderRegistry } from "../platform/provider/chatgptRegistry";
 import type { ChromeApi } from "./chromeApi";
 import type { ExportProgressMessage, FolderExportResult, RuntimeResponse } from "./messages";
-import { isSupportedChatGptUrl } from "./urlSupport";
 
 export type ExportProgress = Omit<ExportProgressMessage, "type" | "requestId">;
 
@@ -12,26 +12,39 @@ export async function exportCurrentChat(
   onProgress?: (progress: ExportProgress) => void
 ): Promise<RuntimeResponse<FolderExportResult>> {
   const tab = await chromeApi.getActiveTab();
+  const providerRegistry = createChatGptProviderRegistry(createChatGptExtractConversation(chromeApi), tab?.id ?? 0);
 
-  if (!tab?.id || !isSupportedChatGptUrl(tab.url)) {
+  if (!tab?.id || !tab.url || !providerRegistry.resolve(tab.url)) {
     return {
       ok: false,
       error: {
         code: "UNSUPPORTED_PAGE",
-        message: "Open a supported ChatGPT conversation page before exporting."
+        message: "Open a supported provider conversation page before exporting."
       },
       warnings: []
     };
   }
 
   try {
-    const draftResponse = await sendExtractionRequest(chromeApi, tab.id);
+    const provider = providerRegistry.resolve(tab.url);
+    if (!provider) {
+      return {
+        ok: false,
+        error: {
+          code: "UNSUPPORTED_PAGE",
+          message: "Open a supported provider conversation page before exporting."
+        },
+        warnings: []
+      };
+    }
 
+    const draftResponse = await sendExtractionRequest(chromeApi, tab.id);
     if (!draftResponse.ok) {
       return draftResponse;
     }
 
-    const draft = draftResponse.data;
+    const normalizedDraft = await provider.createExtractor().extract();
+    const draft = normalizedDraft.conversation;
     if (draft.messages.length === 0) {
       return {
         ok: false,

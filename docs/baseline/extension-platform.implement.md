@@ -139,7 +139,7 @@ Deliverable:
 
 ## Slice 3: Provider Layer Extraction
 
-Status: Ready
+Status: Implemented
 
 Goal:
 
@@ -164,6 +164,11 @@ Deliverable:
 
 - current ChatGPT extraction runs through registry/resolver path
 - Gemini can be added later without orchestration redesign
+- implemented files:
+  - `src/platform/provider/chatgptRegistry.ts`
+  - `src/platform/provider/chatgptRegistry.test.ts`
+  - `src/runtime/exportCurrentChat.ts`
+  - `src/runtime/exportCurrentChat.test.ts`
 
 ## Slice 4: Core Export Normalization
 
@@ -314,4 +319,4 @@ After each slice:
 
 ## Immediate Next Step
 
-Implement Slice 3 by wrapping the current ChatGPT extraction flow in `ProviderExtractor` and resolving it through a concrete `ProviderRegistry` from the application/background path.
+Implement Slice 4 by moving current export-building flow toward `src/core`, with normalized draft/artifact handoff and minimal legacy translation kept only at migration edges.

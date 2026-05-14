@@ -193,4 +193,22 @@ describe("exportCurrentChat", () => {
       currentLabel: "asset-1"
     });
   });
+
+  it("rejects unsupported pages through provider registry resolution", async () => {
+    const chromeApi: ChromeApi = {
+      getActiveTab: vi.fn().mockResolvedValue({ id: 5, url: "https://example.com/chat" }),
+      sendMessageToTab: vi.fn()
+    };
+
+    const result = await exportCurrentChat(chromeApi);
+
+    expect(result).toEqual({
+      ok: false,
+      error: {
+        code: "UNSUPPORTED_PAGE",
+        message: "Open a supported provider conversation page before exporting."
+      },
+      warnings: []
+    });
+  });
 });
